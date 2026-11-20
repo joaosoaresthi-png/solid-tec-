@@ -6,6 +6,7 @@
     <title>Solid Tec | Sistema de Gestão</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         html, body {
@@ -50,7 +51,7 @@
     <div class="no-print p-3 sm:p-5 md:p-6 lg:p-8 max-w-7xl mx-auto">
         <!-- Navbar e Abas -->
         <header class="flex flex-col xl:flex-row justify-between items-stretch xl:items-center mb-5 sm:mb-8 glass-panel rounded-2xl p-3.5 sm:p-4 shadow-lg gap-3.5 sm:gap-4">
-            <div class="flex items-center justify-between gap-3">
+            <div class="flex items-center justify-between gap-2">
                 <div class="flex items-center gap-3 min-w-0">
                     <img src="image_12aada.png" alt="Solid Tec" onerror="this.style.display='none'" class="h-10 sm:h-12 w-auto object-contain shrink-0">
                     <div class="min-w-0">
@@ -59,8 +60,12 @@
                     </div>
                 </div>
 
-                <!-- Sino + Filtro no topo em telas menores que XL -->
+                <!-- Status Nuvem + Sino no Mobile -->
                 <div class="flex xl:hidden items-center gap-2 shrink-0">
+                    <button type="button" onclick="pullFromCloud(true)" id="syncBadgeMobile" class="px-2.5 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-[11px] font-bold text-slate-300 flex items-center gap-1.5 touch-manipulation" title="Toque para sincronizar">
+                        <i class="fa-solid fa-cloud text-blue-400"></i>
+                        <span>Nuvem</span>
+                    </button>
                     <button type="button" id="btnNotifMobile" onclick="openBillingCenter()" class="hidden relative p-2.5 bg-slate-900 rounded-xl border border-red-500/50 text-slate-300 hover:text-white transition shadow-lg cursor-pointer touch-manipulation">
                         <i class="fa-solid fa-bell text-red-400 text-base animate-pulse"></i>
                         <span id="notifCountMobile" class="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow">0</span>
@@ -68,7 +73,7 @@
                 </div>
             </div>
 
-            <!-- Navegação: 4 colunas no mobile (todas as 7 abas visíveis sem scroll lateral) e linha única no desktop -->
+            <!-- Navegação: 4 colunas no mobile e linha única no desktop -->
             <nav aria-label="Menu principal" class="grid grid-cols-4 sm:flex sm:flex-wrap gap-1.5 sm:gap-2 bg-slate-800/60 p-1.5 rounded-xl border border-slate-700 justify-center flex-1 w-full xl:w-auto">
                 <button type="button" onclick="switchTab('dashboard')" id="tab-dashboard" class="px-2 sm:px-3.5 py-2 text-[11px] sm:text-sm font-bold rounded-lg bg-blue-500/20 text-blue-400 transition tab-btn touch-manipulation cursor-pointer flex items-center justify-center gap-1.5">
                     <i class="fa-solid fa-chart-pie"></i><span>Resumo</span>
@@ -93,8 +98,13 @@
                 </button>
             </nav>
 
-            <!-- Sino (Desktop) + Filtro de Mês -->
-            <div class="flex items-center gap-3 w-full xl:w-auto">
+            <!-- Status Nuvem (Desktop) + Sino + Filtro de Mês -->
+            <div class="flex items-center gap-2.5 w-full xl:w-auto">
+                <button type="button" onclick="pullFromCloud(true)" id="syncBadgeDesktop" class="hidden xl:inline-flex items-center gap-2 px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs font-bold text-slate-300 hover:border-blue-500/50 transition cursor-pointer shrink-0" title="Clique para sincronizar agora">
+                    <i class="fa-solid fa-cloud text-blue-400"></i>
+                    <span>Nuvem</span>
+                </button>
+
                 <button type="button" id="btnNotif" onclick="openBillingCenter()" class="hidden xl:inline-flex relative p-2.5 bg-slate-900 rounded-xl border border-red-500/50 text-slate-300 hover:text-white transition shadow-lg cursor-pointer shrink-0">
                     <i class="fa-solid fa-bell text-red-400 text-lg animate-pulse"></i>
                     <span id="notifCount" class="absolute -top-2 -right-2 bg-red-600 text-white text-[11px] font-bold px-2 py-0.5 rounded-full shadow">0</span>
@@ -110,7 +120,7 @@
             </div>
         </header>
 
-        <!-- AVISO GLOBAL DE STATUS / ARMAZENAMENTO -->
+        <!-- AVISO GLOBAL DE STATUS / SINCRONIZAÇÃO -->
         <div id="storageNotice" class="hidden mb-5 bg-amber-950/80 border border-amber-500/50 text-amber-200 px-4 py-3 rounded-xl text-xs sm:text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <span id="storageNoticeText"></span>
             <button type="button" onclick="document.getElementById('storageNotice').classList.add('hidden')" class="text-amber-300 hover:text-white font-bold text-xs self-end sm:self-auto">Fechar</button>
@@ -330,7 +340,7 @@
                         </div>
                     </div>
 
-                    <div id="srvInstDetailsWrapper" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-2">
+                    <div id="srvInstDetailsWrapper" class="hidden grid-cols-1 sm:grid-cols-2 gap-2.5 mt-2">
                         <div>
                             <label class="block text-xs font-semibold text-slate-400 mb-1">Parcelar o resto em (x)</label>
                             <input type="number" id="srvInstCount" value="1" min="1" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700">
@@ -397,17 +407,21 @@
             </section>
         </main>
 
-        <!-- ABA 6: BACKUP / CONFIGURAÇÕES -->
+        <!-- ABA 6: BACKUP & NUVEM -->
         <main id="view-settings" class="tab-view hidden space-y-6 max-w-2xl mx-auto w-full">
             <div class="glass-panel p-5 sm:p-8 rounded-2xl shadow-xl text-center">
-                <h2 class="text-xl sm:text-2xl font-bold text-white mb-2">Backup de Dados</h2>
-                <p class="text-xs sm:text-sm text-slate-400 mb-6">Exporte ou restaure seu arquivo <code class="text-blue-400">.json</code> diretamente neste dispositivo.</p>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <button type="button" onclick="exportBackupJSON()" class="bg-slate-700 hover:bg-slate-600 text-white py-3.5 sm:py-4 px-4 rounded-xl font-bold text-sm transition cursor-pointer touch-manipulation flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-download"></i><span>Salvar Backup (.json)</span>
+                <h2 class="text-xl sm:text-2xl font-bold text-white mb-2">Backup & Sincronização na Nuvem</h2>
+                <p class="text-xs sm:text-sm text-slate-400 mb-6">Todas as alterações são enviadas automaticamente para a nuvem e compartilhadas entre seus dispositivos.</p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <button type="button" onclick="pullFromCloud(true)" class="bg-emerald-600 hover:bg-emerald-500 text-white py-3.5 px-4 rounded-xl font-bold text-sm transition cursor-pointer touch-manipulation flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-rotate"></i><span>Sincronizar Agora</span>
                     </button>
-                    <label class="bg-blue-600 hover:bg-blue-500 text-white py-3.5 sm:py-4 px-4 rounded-xl cursor-pointer font-bold text-sm transition flex items-center justify-center gap-2 touch-manipulation">
-                        <i class="fa-solid fa-upload"></i><span>Restaurar Backup (.json)</span>
+                    <button type="button" onclick="exportBackupJSON()" class="bg-slate-700 hover:bg-slate-600 text-white py-3.5 px-4 rounded-xl font-bold text-sm transition cursor-pointer touch-manipulation flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-download"></i><span>Baixar (.json)</span>
+                    </button>
+                    <label class="bg-blue-600 hover:bg-blue-500 text-white py-3.5 px-4 rounded-xl cursor-pointer font-bold text-sm transition flex items-center justify-center gap-2 touch-manipulation">
+                        <i class="fa-solid fa-upload"></i><span>Restaurar (.json)</span>
                         <input type="file" id="backupFileInput" accept=".json,application/json" class="hidden" onchange="importBackupJSON(event)">
                     </label>
                 </div>
@@ -458,6 +472,15 @@
     </div>
 
     <script>
+        // --- CONFIGURAÇÃO SUPABASE ---
+        const SUPABASE_URL = 'https://ewakvfqsbxabpezbjpgt.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_gJyzCGv64vbIxogPRTLM2A_qDIX3IC2';
+        const SOLID_TEC_PIN = 'solidtec2026';
+
+        const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+            global: { headers: { 'x-solid-pin': SOLID_TEC_PIN } }
+        });
+
         function safeReadJSON(key, fallback = []) {
             try {
                 const raw = localStorage.getItem(key);
@@ -526,6 +549,7 @@
 
         let chartInstance = null;
         let draggedItemId = null;
+        let isSyncing = false;
 
         const todayDate = new Date();
         const yyyy = todayDate.getFullYear();
@@ -541,39 +565,121 @@
             }
         }
 
-        function saveToLocal({ stripPhotosOnQuota = true } = {}) {
+        function setSyncBadge(state, label) {
+            const configs = {
+                syncing: { icon: 'fa-solid fa-rotate fa-spin text-amber-400', text: label || 'Sincronizando...' },
+                ok: { icon: 'fa-solid fa-cloud-check text-emerald-400', text: label || 'Nuvem OK' },
+                error: { icon: 'fa-solid fa-cloud-exclamation text-red-400', text: label || 'Offline' }
+            };
+            const cfg = configs[state] || configs.ok;
+            ['syncBadgeMobile', 'syncBadgeDesktop'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.innerHTML = `<i class="${cfg.icon}"></i><span>${cfg.text}</span>`;
+                }
+            });
+        }
+
+        function updateLocalCacheOnly() {
             try {
                 localStorage.setItem('solidTecData', JSON.stringify(sales));
                 localStorage.setItem('solidTecExpenses', JSON.stringify(expenses));
                 localStorage.setItem('solidTecServices', JSON.stringify(services));
                 localStorage.setItem('solidTecProlabore', JSON.stringify(prolabore));
-                updateBillingNotification();
-                return true;
             } catch (err) {
                 const isQuota = err && (err.name === 'QuotaExceededError' || err.code === 22 || err.code === 1014);
-                if (isQuota && stripPhotosOnQuota) {
-                    const salesWithoutPhotos = sales.map(s => ({ ...s, photo: null }));
+                if (isQuota) {
                     try {
-                        localStorage.setItem('solidTecData', JSON.stringify(salesWithoutPhotos));
+                        const salesNoPhoto = sales.map(s => ({ ...s, photo: null }));
+                        localStorage.setItem('solidTecData', JSON.stringify(salesNoPhoto));
                         localStorage.setItem('solidTecExpenses', JSON.stringify(expenses));
                         localStorage.setItem('solidTecServices', JSON.stringify(services));
                         localStorage.setItem('solidTecProlabore', JSON.stringify(prolabore));
-                        updateBillingNotification();
-                        showStorageNotice(
-                            '<strong>Aviso de espaço no navegador:</strong> as fotos em Base64 excederam o limite do <code>localStorage</code>. Todos os dados financeiros foram salvos sem as fotos pesadas no navegador (as fotos continuam no seu arquivo <code>.json</code>).'
-                        );
-                        return true;
-                    } catch (err2) {
-                        showStorageNotice(
-                            '<strong>Atenção:</strong> o armazenamento local do navegador está cheio. Seus dados continuam ativos nesta sessão; salve um backup <code>.json</code> para segurança.'
-                        );
-                        updateBillingNotification();
-                        return false;
-                    }
+                    } catch (e2) {}
                 }
-                updateBillingNotification();
-                return false;
             }
+        }
+
+        async function syncToCloud() {
+            if (isSyncing) return;
+            isSyncing = true;
+            setSyncBadge('syncing', 'Salvando...');
+            try {
+                const rows = [
+                    { collection: 'sales', items: sales, updated_at: new Date().toISOString() },
+                    { collection: 'services', items: services, updated_at: new Date().toISOString() },
+                    { collection: 'expenses', items: expenses, updated_at: new Date().toISOString() },
+                    { collection: 'prolabore', items: prolabore, updated_at: new Date().toISOString() }
+                ];
+                const { error } = await db.from('solid_tec_store').upsert(rows, { onConflict: 'collection' });
+                if (error) throw error;
+                setSyncBadge('ok', 'Nuvem OK');
+            } catch (err) {
+                console.error('Erro ao enviar para Supabase:', err);
+                setSyncBadge('error', 'Erro Nuvem');
+                showStorageNotice('<strong>Aviso de sincronização:</strong> alteração salva neste aparelho, mas falhou ao enviar para a nuvem. Verifique se a tabela <code>solid_tec_store</code> foi criada no Supabase.');
+            } finally {
+                isSyncing = false;
+            }
+        }
+
+        window.pullFromCloud = async function(manual = false) {
+            if (isSyncing) return;
+            isSyncing = true;
+            setSyncBadge('syncing', 'Sincronizando...');
+            try {
+                const { data, error } = await db.from('solid_tec_store').select('collection, items');
+                if (error) throw error;
+
+                if (data && data.length > 0) {
+                    data.forEach(row => {
+                        if (row.collection === 'sales') sales = normalizeSales(row.items);
+                        if (row.collection === 'services') services = normalizeServices(row.items);
+                        if (row.collection === 'expenses') expenses = normalizeSimpleList(row.items);
+                        if (row.collection === 'prolabore') prolabore = normalizeSimpleList(row.items);
+                    });
+
+                    updateLocalCacheOnly();
+                    refreshMonthlyData();
+                    renderProductsGrid();
+                    renderServicesGrid();
+                    renderExpensesGrid();
+                    renderProlaboreGrid();
+                    setSyncBadge('ok', 'Nuvem OK');
+
+                    if (manual) {
+                        const statusEl = document.getElementById('backupStatusMsg');
+                        if (statusEl) {
+                            statusEl.textContent = `✅ Sincronizado com a nuvem: ${sales.length} produto(s), ${services.length} serviço(s), ${expenses.length} despesa(s) e ${prolabore.length} pró-labore(s).`;
+                            statusEl.classList.remove('hidden');
+                        }
+                    }
+                } else {
+                    isSyncing = false;
+                    const hasLocalData = sales.length > 0 || services.length > 0 || expenses.length > 0 || prolabore.length > 0;
+                    if (hasLocalData) {
+                        await syncToCloud();
+                    } else {
+                        setSyncBadge('ok', 'Nuvem OK');
+                    }
+                    return;
+                }
+            } catch (err) {
+                console.error('Erro ao baixar do Supabase:', err);
+                setSyncBadge('error', 'Offline');
+                if (manual) {
+                    showStorageNotice('<strong>Erro ao conectar na nuvem:</strong> confira se você executou o SQL de criação da tabela <code>solid_tec_store</code> no painel do Supabase.');
+                }
+            } finally {
+                isSyncing = false;
+            }
+        };
+
+        function saveToLocal() {
+            updateLocalCacheOnly();
+            updateBillingNotification();
+            syncToCloud();
+            return true;
         }
 
         function refreshMonthlyData() {
@@ -1659,13 +1765,13 @@
                         expenses = normalizeSimpleList(data.expenses || []);
                         services = normalizeServices(data.services || []);
                         prolabore = normalizeSimpleList(data.prolabore || []);
-                        saveToLocal({ stripPhotosOnQuota: true });
+                        saveToLocal();
                         refreshMonthlyData();
                         renderProductsGrid();
                         renderServicesGrid();
                         renderExpensesGrid();
                         renderProlaboreGrid();
-                        const msg = `✅ Backup restaurado: ${sales.length} produto(s), ${services.length} serviço(s), ${expenses.length} despesa(s) e ${prolabore.length} pró-labore(s).`;
+                        const msg = `✅ Backup restaurado e enviado para a nuvem: ${sales.length} produto(s), ${services.length} serviço(s), ${expenses.length} despesa(s) e ${prolabore.length} pró-labore(s).`;
                         if (statusEl) {
                             statusEl.textContent = msg;
                             statusEl.classList.remove('hidden');
@@ -1858,8 +1964,14 @@
             });
         }
 
+        // Sincroniza sempre que voltar para a aba/app no celular ou PC
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') pullFromCloud(false);
+        });
+
         updateBillingNotification();
         switchTab('dashboard');
+        pullFromCloud(false);
     </script>
 </body>
 </html>
