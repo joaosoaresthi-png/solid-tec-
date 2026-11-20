@@ -8,228 +8,249 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body { background-color: #0f172a; color: #e2e8f0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); }
-        ::-webkit-scrollbar { width: 8px; }
+        html, body {
+            background-color: #0f172a;
+            color: #e2e8f0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            max-width: 100%;
+        }
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.75);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.06);
+            max-width: 100%;
+        }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: #0f172a; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #475569; }
-        
+
         @media print {
             body { background: white !important; color: black !important; }
             .no-print { display: none !important; }
             .print-only { display: block !important; }
         }
         .print-only { display: none; }
-        
+
         input[type="date"]::-webkit-calendar-picker-indicator { cursor: pointer; opacity: 0.6; transition: 0.2s; }
         input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
     </style>
 </head>
-<body class="min-h-screen">
-    
-    <div class="no-print p-4 md:p-6 lg:p-8">
+<body class="min-h-screen w-full">
+
+    <div class="no-print p-3 sm:p-5 md:p-6 lg:p-8 max-w-full">
         <!-- Navbar e Abas -->
-        <header class="flex flex-col xl:flex-row justify-between items-center mb-8 glass-panel rounded-2xl p-4 shadow-lg gap-4">
-            <div class="flex items-center gap-4">
-                <img src="image_12aada.png" alt="Solid Tec" class="h-12 w-auto object-contain">
-                <div>
-                    <h1 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">Solid Tec</h1>
-                    <p class="text-xs text-slate-400 uppercase tracking-widest font-semibold">Sistema de Gestão Integrada</p>
+        <header class="flex flex-col xl:flex-row justify-between items-stretch xl:items-center mb-6 md:mb-8 glass-panel rounded-2xl p-3.5 sm:p-4 shadow-lg gap-3 sm:gap-4">
+            <div class="flex items-center justify-between xl:justify-start gap-3">
+                <div class="flex items-center gap-3 min-w-0">
+                    <img src="image_12aada.png" alt="Solid Tec" class="h-10 sm:h-12 w-auto object-contain shrink-0">
+                    <div class="min-w-0">
+                        <h1 class="text-xl sm:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400 truncate">Solid Tec</h1>
+                        <p class="text-[10px] sm:text-xs text-slate-400 uppercase tracking-wider font-semibold truncate">Sistema de Gestão Integrada</p>
+                    </div>
                 </div>
             </div>
-            
-            <nav class="flex flex-wrap gap-2 bg-slate-800/50 p-1 rounded-xl border border-slate-700 justify-center flex-1 w-full xl:w-auto">
-                <button onclick="switchTab('dashboard')" id="tab-dashboard" class="px-4 py-2 text-sm font-bold rounded-lg bg-blue-500/20 text-blue-400 transition tab-btn"><i class="fa-solid fa-chart-pie mr-2"></i>Resumo</button>
-                <button onclick="switchTab('products')" id="tab-products" class="px-4 py-2 text-sm font-bold rounded-lg text-slate-400 hover:text-white hover:bg-slate-700 transition tab-btn"><i class="fa-solid fa-box-open mr-2"></i>Produtos</button>
-                <button onclick="switchTab('services')" id="tab-services" class="px-4 py-2 text-sm font-bold rounded-lg text-slate-400 hover:text-white hover:bg-slate-700 transition tab-btn"><i class="fa-solid fa-wrench mr-2"></i>Serviços</button>
-                <button onclick="switchTab('ranking')" id="tab-ranking" class="px-4 py-2 text-sm font-bold rounded-lg text-slate-400 hover:text-white hover:bg-slate-700 transition tab-btn"><i class="fa-solid fa-trophy mr-2"></i>Ranking</button>
-                <button onclick="switchTab('expenses')" id="tab-expenses" class="px-4 py-2 text-sm font-bold rounded-lg text-slate-400 hover:text-white hover:bg-slate-700 transition tab-btn"><i class="fa-solid fa-money-bill-transfer mr-2"></i>Despesas</button>
-                <button onclick="switchTab('prolabore')" id="tab-prolabore" class="px-4 py-2 text-sm font-bold rounded-lg text-slate-400 hover:text-white hover:bg-slate-700 transition tab-btn"><i class="fa-solid fa-user-tie mr-2"></i>Pró-Labore</button>
-                <button onclick="switchTab('settings')" id="tab-settings" class="px-4 py-2 text-sm font-bold rounded-lg text-slate-400 hover:text-white hover:bg-slate-700 transition tab-btn"><i class="fa-solid fa-gear mr-2"></i>Backup</button>
+
+            <!-- Navegação: rolagem horizontal suave no mobile, wrap no desktop -->
+            <nav class="flex flex-nowrap sm:flex-wrap gap-1.5 sm:gap-2 bg-slate-800/60 p-1.5 rounded-xl border border-slate-700 justify-start sm:justify-center flex-1 w-full xl:w-auto overflow-x-auto">
+                <button onclick="switchTab('dashboard')" id="tab-dashboard" class="px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold rounded-lg bg-blue-500/20 text-blue-400 transition tab-btn shrink-0"><i class="fa-solid fa-chart-pie mr-1.5 sm:mr-2"></i>Resumo</button>
+                <button onclick="switchTab('products')" id="tab-products" class="px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold rounded-lg text-slate-400 hover:text-white hover:bg-slate-700 transition tab-btn shrink-0"><i class="fa-solid fa-box-open mr-1.5 sm:mr-2"></i>Produtos</button>
+                <button onclick="switchTab('services')" id="tab-services" class="px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold rounded-lg text-slate-400 hover:text-white hover:bg-slate-700 transition tab-btn shrink-0"><i class="fa-solid fa-wrench mr-1.5 sm:mr-2"></i>Serviços</button>
+                <button onclick="switchTab('ranking')" id="tab-ranking" class="px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold rounded-lg text-slate-400 hover:text-white hover:bg-slate-700 transition tab-btn shrink-0"><i class="fa-solid fa-trophy mr-1.5 sm:mr-2"></i>Ranking</button>
+                <button onclick="switchTab('expenses')" id="tab-expenses" class="px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold rounded-lg text-slate-400 hover:text-white hover:bg-slate-700 transition tab-btn shrink-0"><i class="fa-solid fa-money-bill-transfer mr-1.5 sm:mr-2"></i>Despesas</button>
+                <button onclick="switchTab('prolabore')" id="tab-prolabore" class="px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold rounded-lg text-slate-400 hover:text-white hover:bg-slate-700 transition tab-btn shrink-0"><i class="fa-solid fa-user-tie mr-1.5 sm:mr-2"></i>Pró-Labore</button>
+                <button onclick="switchTab('settings')" id="tab-settings" class="px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold rounded-lg text-slate-400 hover:text-white hover:bg-slate-700 transition tab-btn shrink-0"><i class="fa-solid fa-gear mr-1.5 sm:mr-2"></i>Backup</button>
             </nav>
 
-            <div class="flex items-center gap-4">
+            <div class="flex items-center justify-between sm:justify-end gap-3 w-full xl:w-auto">
                 <!-- SINO DE NOTIFICAÇÃO DE COBRANÇAS -->
-                <button id="btnNotif" onclick="openBillingCenter()" class="hidden relative p-2.5 bg-slate-900 rounded-xl border border-red-500/50 text-slate-300 hover:text-white transition shadow-lg cursor-pointer">
+                <button id="btnNotif" onclick="openBillingCenter()" class="hidden relative p-2.5 bg-slate-900 rounded-xl border border-red-500/50 text-slate-300 hover:text-white transition shadow-lg cursor-pointer shrink-0">
                     <i class="fa-solid fa-bell text-red-400 text-lg animate-pulse"></i>
                     <span id="notifCount" class="absolute -top-2 -right-2 bg-red-600 text-white text-[11px] font-bold px-2 py-0.5 rounded-full shadow">0</span>
                 </button>
 
                 <!-- FILTRO DE FECHAMENTO MENSAL -->
-                <div class="flex items-center gap-2 bg-slate-900 p-2 rounded-xl border border-slate-700 shadow-inner">
-                    <i class="fa-regular fa-calendar text-blue-400 ml-2"></i>
-                    <div class="flex flex-col">
-                        <label class="text-[10px] font-bold text-slate-500 uppercase">Fechamento / Mês</label>
-                        <input type="month" id="globalMonthFilter" onchange="refreshMonthlyData()" class="bg-transparent text-white outline-none text-sm font-bold [color-scheme:dark] cursor-pointer">
+                <div class="flex items-center gap-2 bg-slate-900 p-2 rounded-xl border border-slate-700 shadow-inner flex-1 sm:flex-initial justify-between sm:justify-start">
+                    <div class="flex items-center gap-2 min-w-0">
+                        <i class="fa-regular fa-calendar text-blue-400 ml-1.5 shrink-0"></i>
+                        <div class="flex flex-col min-w-0">
+                            <label class="text-[10px] font-bold text-slate-500 uppercase truncate">Fechamento / Mês</label>
+                            <input type="month" id="globalMonthFilter" onchange="refreshMonthlyData()" class="bg-transparent text-white outline-none text-xs sm:text-sm font-bold [color-scheme:dark] cursor-pointer w-full">
+                        </div>
                     </div>
                 </div>
             </div>
         </header>
 
+        <!-- AVISO DE ARMAZENAMENTO / PERSISTÊNCIA -->
+        <div id="storageNotice" class="hidden mb-6 bg-amber-950/70 border border-amber-500/50 text-amber-200 px-4 py-3 rounded-xl text-xs sm:text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <span id="storageNoticeText"></span>
+            <button onclick="document.getElementById('storageNotice').classList.add('hidden')" class="text-amber-300 hover:text-white font-bold text-xs self-end sm:self-auto">Fechar</button>
+        </div>
+
         <!-- ABA 1: DASHBOARD -->
-        <main id="view-dashboard" class="tab-view block space-y-6">
-            
+        <main id="view-dashboard" class="tab-view block space-y-5 sm:space-y-6">
             <!-- PAINEL DE PATRIMÔNIO (ESTOQUE) -->
-            <div class="bg-gradient-to-r from-slate-800 to-slate-900 border border-slate-700 rounded-2xl p-5 flex flex-col md:flex-row justify-between items-center shadow-lg gap-4">
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 text-xl">
+            <div class="bg-gradient-to-r from-slate-800 to-slate-900 border border-slate-700 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center shadow-lg gap-3">
+                <div class="flex items-center gap-3 sm:gap-4 min-w-0">
+                    <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 text-lg sm:text-xl shrink-0">
                         <i class="fa-solid fa-boxes-stacked"></i>
                     </div>
-                    <div>
-                        <h3 class="text-white font-bold text-lg">Patrimônio em Estoque</h3>
+                    <div class="min-w-0">
+                        <h3 class="text-white font-bold text-base sm:text-lg">Patrimônio em Estoque</h3>
                         <p class="text-xs text-slate-400">Valor investido em mercadorias não vendidas (Não afeta o lucro do mês)</p>
                     </div>
                 </div>
-                <div class="text-3xl font-bold text-blue-400" id="dashEstoque">R$ 0,00</div>
+                <div class="text-2xl sm:text-3xl font-bold text-blue-400 break-all sm:break-normal" id="dashEstoque">R$ 0,00</div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div class="glass-panel p-6 rounded-2xl border-l-4 border-l-emerald-500 relative overflow-hidden">
-                    <div class="absolute top-4 right-4 text-emerald-500/20 text-5xl"><i class="fa-solid fa-money-bill-trend-up"></i></div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
+                <div class="glass-panel p-4 sm:p-6 rounded-2xl border-l-4 border-l-emerald-500 relative overflow-hidden">
+                    <div class="absolute top-3 right-3 text-emerald-500/20 text-4xl sm:text-5xl"><i class="fa-solid fa-money-bill-trend-up"></i></div>
                     <p class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-1">Faturamento (Mês)</p>
-                    <p class="text-3xl font-bold text-white" id="dashRevenue">R$ 0,00</p>
+                    <p class="text-2xl sm:text-3xl font-bold text-white" id="dashRevenue">R$ 0,00</p>
                 </div>
-                <div class="glass-panel p-6 rounded-2xl border-l-4 border-l-orange-500 relative overflow-hidden">
-                    <div class="absolute top-4 right-4 text-orange-500/20 text-5xl"><i class="fa-solid fa-box"></i></div>
+                <div class="glass-panel p-4 sm:p-6 rounded-2xl border-l-4 border-l-orange-500 relative overflow-hidden">
+                    <div class="absolute top-3 right-3 text-orange-500/20 text-4xl sm:text-5xl"><i class="fa-solid fa-box"></i></div>
                     <p class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-1">Custo das Vendas (Mês)</p>
-                    <p class="text-3xl font-bold text-white" id="dashProdCosts">R$ 0,00</p>
+                    <p class="text-2xl sm:text-3xl font-bold text-white" id="dashProdCosts">R$ 0,00</p>
                 </div>
-                <div class="glass-panel p-6 rounded-2xl border-l-4 border-l-red-500 relative overflow-hidden">
-                    <div class="absolute top-4 right-4 text-red-500/20 text-5xl"><i class="fa-solid fa-tools"></i></div>
+                <div class="glass-panel p-4 sm:p-6 rounded-2xl border-l-4 border-l-red-500 relative overflow-hidden">
+                    <div class="absolute top-3 right-3 text-red-500/20 text-4xl sm:text-5xl"><i class="fa-solid fa-tools"></i></div>
                     <p class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-1">Despesas & Pró-Labore (Mês)</p>
-                    <p class="text-3xl font-bold text-white" id="dashOpCosts">R$ 0,00</p>
+                    <p class="text-2xl sm:text-3xl font-bold text-white" id="dashOpCosts">R$ 0,00</p>
                 </div>
-                <div class="glass-panel p-6 rounded-2xl border-l-4 border-l-blue-500 relative overflow-hidden">
-                    <div class="absolute top-4 right-4 text-blue-500/20 text-5xl"><i class="fa-solid fa-wallet"></i></div>
+                <div class="glass-panel p-4 sm:p-6 rounded-2xl border-l-4 border-l-blue-500 relative overflow-hidden">
+                    <div class="absolute top-3 right-3 text-blue-500/20 text-4xl sm:text-5xl"><i class="fa-solid fa-wallet"></i></div>
                     <p class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-1">Lucro Líquido (Mês)</p>
-                    <p class="text-3xl font-bold" id="dashProfit">R$ 0,00</p>
+                    <p class="text-2xl sm:text-3xl font-bold" id="dashProfit">R$ 0,00</p>
                 </div>
             </div>
-            
-            <div class="glass-panel p-6 rounded-2xl h-96 flex flex-col">
-                <h2 class="text-sm font-bold text-slate-300 uppercase tracking-wider mb-4">
-                    <i class="fa-solid fa-chart-line mr-2 text-blue-400"></i>Faturamento e Lucro Diário 
-                    <span class="text-xs font-normal text-blue-400 normal-case ml-2 bg-blue-500/10 px-2 py-1 rounded">(👆 Clique nas barras para ver os detalhes)</span>
+
+            <div class="glass-panel p-4 sm:p-6 rounded-2xl h-80 sm:h-96 flex flex-col">
+                <h2 class="text-xs sm:text-sm font-bold text-slate-300 uppercase tracking-wider mb-3 sm:mb-4 flex flex-wrap items-center gap-2">
+                    <span><i class="fa-solid fa-chart-line mr-2 text-blue-400"></i>Faturamento e Lucro Diário</span>
+                    <span class="text-[11px] font-normal text-blue-400 normal-case bg-blue-500/10 px-2 py-1 rounded">👆 Clique nas barras para ver os detalhes</span>
                 </h2>
-                <div class="flex-1 relative w-full h-full"><canvas id="profitChart"></canvas></div>
+                <div class="flex-1 relative w-full h-full min-h-0"><canvas id="profitChart"></canvas></div>
             </div>
         </main>
 
         <!-- ABA 2: PRODUTOS / ESTOQUE -->
-        <main id="view-products" class="tab-view hidden grid grid-cols-1 xl:grid-cols-12 gap-8">
-            <section class="xl:col-span-4 h-fit glass-panel p-6 rounded-2xl shadow-xl">
-                <h2 class="text-lg font-bold text-white mb-6 border-b border-slate-700 pb-4"><i class="fa-solid fa-box-open text-blue-400 mr-2"></i>Entrada de Aparelho</h2>
-                <form id="salesForm" class="space-y-4">
-                    <input type="text" id="prodName" required placeholder="Aparelho / Produto" class="w-full bg-slate-800/50 rounded-lg p-2.5 text-white border border-slate-700">
-                    <input type="text" id="prodSerial" placeholder="IMEI / Número de Série (Opcional)" class="w-full bg-slate-800/50 rounded-lg p-2.5 text-white border border-slate-700">
-                    <input type="date" id="buyDate" required class="w-full bg-slate-800/50 rounded-lg p-2.5 text-white border border-slate-700 [color-scheme:dark]">
-                    
-                    <div class="grid grid-cols-3 gap-3">
+        <main id="view-products" class="tab-view hidden grid-cols-1 xl:grid-cols-12 gap-6 sm:gap-8">
+            <section class="xl:col-span-4 h-fit glass-panel p-4 sm:p-6 rounded-2xl shadow-xl">
+                <h2 class="text-base sm:text-lg font-bold text-white mb-5 border-b border-slate-700 pb-3"><i class="fa-solid fa-box-open text-blue-400 mr-2"></i>Entrada de Aparelho</h2>
+                <form id="salesForm" class="space-y-3.5">
+                    <input type="text" id="prodName" required placeholder="Aparelho / Produto" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700">
+                    <input type="text" id="prodSerial" placeholder="IMEI / Número de Série (Opcional)" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700">
+                    <input type="date" id="buyDate" required class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700 [color-scheme:dark]">
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <div>
                             <label class="block text-[11px] font-semibold text-slate-400 mb-1">Custo Base (R$)</label>
-                            <input type="number" step="0.01" id="costAcq" required placeholder="0.00" class="w-full bg-slate-800/50 rounded-lg p-2.5 text-white border border-slate-700">
+                            <input type="number" step="0.01" id="costAcq" required placeholder="0.00" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700">
                         </div>
                         <div>
                             <label class="block text-[11px] font-semibold text-slate-400 mb-1">Peças (R$)</label>
-                            <input type="number" step="0.01" id="costVar" placeholder="0.00" class="w-full bg-slate-800/50 rounded-lg p-2.5 text-white border border-slate-700">
+                            <input type="number" step="0.01" id="costVar" placeholder="0.00" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700">
                         </div>
                         <div>
                             <label class="flex justify-between items-center text-[11px] font-semibold text-slate-400 mb-1">
-                                Frete (R$) 
+                                Frete (R$)
                                 <button type="button" onclick="openCalc('costTravelProd')" class="text-blue-400 hover:text-blue-300" title="Calcular Frete"><i class="fa-solid fa-calculator"></i></button>
                             </label>
-                            <input type="number" step="0.01" id="costTravelProd" placeholder="0.00" class="w-full bg-slate-800/50 rounded-lg p-2.5 text-white border border-slate-700">
+                            <input type="number" step="0.01" id="costTravelProd" placeholder="0.00" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700">
                         </div>
                     </div>
-                    
-                    <div class="pt-2">
+
+                    <div class="pt-1">
                         <label class="block text-xs font-semibold text-slate-400 mb-1">Status Inicial</label>
-                        <select id="prodInitialStatus" onchange="toggleNewProdSoldFields(this.value)" class="w-full bg-slate-800/50 rounded-lg p-2.5 text-white border border-slate-700 outline-none cursor-pointer">
+                        <select id="prodInitialStatus" onchange="toggleNewProdSoldFields(this.value)" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700 outline-none cursor-pointer">
                             <option value="estoque">📦 Colocar no Estoque</option>
                             <option value="vendido">✅ Registrar como Vendido (Saída)</option>
                         </select>
                     </div>
 
                     <div id="newProdSoldFields" class="hidden space-y-4 pt-4 mt-2 border-t border-slate-700">
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div>
                                 <label class="block text-xs font-semibold text-emerald-400 mb-1">Valor Venda (R$)</label>
-                                <input type="number" step="0.01" id="newProdSalePrice" placeholder="0.00" class="w-full bg-emerald-900/20 rounded-lg p-2.5 text-emerald-400 border border-emerald-700">
+                                <input type="number" step="0.01" id="newProdSalePrice" placeholder="0.00" class="w-full bg-emerald-900/20 rounded-lg p-2.5 text-sm text-emerald-400 border border-emerald-700">
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-slate-400 mb-1">Data da Venda</label>
-                                <input type="date" id="newProdSaleDate" class="w-full bg-slate-800/50 rounded-lg p-2.5 text-white border border-slate-700 [color-scheme:dark]">
+                                <input type="date" id="newProdSaleDate" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700 [color-scheme:dark]">
                             </div>
                         </div>
-                        
-                        <div class="grid grid-cols-1 gap-4">
+
+                        <div class="grid grid-cols-1 gap-3">
                             <div>
                                 <label class="block text-xs font-semibold text-slate-400 mb-1">Pagamento</label>
-                                <select id="newProdPaymentType" onchange="toggleNewProdPayment(this.value)" class="w-full bg-slate-800/50 rounded-lg p-2.5 text-white border border-slate-700 cursor-pointer">
+                                <select id="newProdPaymentType" onchange="toggleNewProdPayment(this.value)" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700 cursor-pointer">
                                     <option value="avista">À Vista</option>
                                     <option value="parcelado">Parcelado / Com Entrada</option>
                                 </select>
                             </div>
-                            
+
                             <div id="newProdInstWrapper" class="hidden">
                                 <div class="grid grid-cols-1 gap-2 mb-2">
                                     <div>
                                         <label class="block text-xs font-semibold text-emerald-400 mb-1">Valor de Entrada (R$)</label>
-                                        <input type="number" step="0.01" id="newProdDownPayment" placeholder="0.00" class="w-full bg-slate-800/50 rounded-lg p-2.5 text-emerald-400 border border-emerald-700">
+                                        <input type="number" step="0.01" id="newProdDownPayment" placeholder="0.00" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-emerald-400 border border-emerald-700">
                                     </div>
                                 </div>
-                                <div class="grid grid-cols-2 gap-2">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                     <div>
                                         <label class="block text-xs font-semibold text-slate-400 mb-1">Parcelar Resto (x)</label>
-                                        <input type="number" id="newProdInstCount" value="1" min="1" class="w-full bg-slate-800/50 rounded-lg p-2.5 text-white border border-slate-700">
+                                        <input type="number" id="newProdInstCount" value="1" min="1" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700">
                                     </div>
                                     <div>
                                         <label class="block text-xs font-semibold text-slate-400 mb-1">1ª Cobrança</label>
-                                        <input type="date" id="newProdFirstDue" class="w-full bg-slate-800/50 rounded-lg p-2.5 text-white border border-slate-700 [color-scheme:dark]">
+                                        <input type="date" id="newProdFirstDue" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700 [color-scheme:dark]">
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-4">
-                            <input type="text" id="newProdCustName" placeholder="Nome Cliente" class="w-full bg-slate-800/50 rounded-lg p-2.5 text-white border border-slate-700">
-                            <input type="text" id="newProdCustPhone" placeholder="WhatsApp (Apenas Números)" class="w-full bg-slate-800/50 rounded-lg p-2.5 text-white border border-slate-700">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <input type="text" id="newProdCustName" placeholder="Nome Cliente" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700">
+                            <input type="text" id="newProdCustPhone" placeholder="WhatsApp (Apenas Números)" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700">
                         </div>
                     </div>
 
                     <div>
                         <label class="block text-xs font-semibold text-slate-400 mb-1 mt-2">Foto (Opcional)</label>
-                        <input type="file" id="prodPhoto" accept="image/*" class="w-full bg-slate-800/30 rounded-lg p-2 text-white border border-slate-700 text-sm">
+                        <input type="file" id="prodPhoto" accept="image/*" class="w-full bg-slate-800/40 rounded-lg p-2 text-white border border-slate-700 text-xs sm:text-sm">
                     </div>
-                    <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg mt-2">Salvar Registro</button>
+                    <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg mt-2 text-sm">Salvar Registro</button>
                 </form>
             </section>
-            
-            <section class="xl:col-span-8 glass-panel p-6 rounded-2xl h-[85vh] flex flex-col">
-                <div class="flex justify-between items-center mb-4 border-b border-slate-700 pb-3 gap-4">
-                    <h2 class="text-sm font-bold text-slate-300 uppercase"><i class="fa-solid fa-list mr-2 text-blue-400"></i>Inventário & Histórico Global</h2>
-                    <input type="text" id="searchInput" onkeyup="renderProductsGrid()" placeholder="Pesquisar..." class="flex-1 max-w-sm bg-slate-900 rounded-full px-4 py-1.5 text-sm text-white border border-slate-700 outline-none">
+
+            <section class="xl:col-span-8 glass-panel p-4 sm:p-6 rounded-2xl min-h-[60vh] xl:h-[85vh] flex flex-col">
+                <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center mb-4 border-b border-slate-700 pb-3 gap-3">
+                    <h2 class="text-xs sm:text-sm font-bold text-slate-300 uppercase"><i class="fa-solid fa-list mr-2 text-blue-400"></i>Inventário & Histórico Global</h2>
+                    <input type="text" id="searchInput" onkeyup="renderProductsGrid()" placeholder="Pesquisar..." class="w-full sm:max-w-sm bg-slate-900 rounded-full px-4 py-1.5 text-sm text-white border border-slate-700 outline-none">
                 </div>
-                <div id="historyGrid" class="flex-1 overflow-y-auto pr-2 space-y-3"></div>
+                <div id="historyGrid" class="flex-1 overflow-y-auto pr-1 sm:pr-2 space-y-3"></div>
             </section>
         </main>
 
         <!-- ABA DE RANKING -->
-        <main id="view-ranking" class="tab-view hidden space-y-6 max-w-5xl mx-auto">
-            <div class="glass-panel p-6 md:p-8 rounded-2xl shadow-xl">
-                <h2 class="text-xl font-bold text-white mb-2"><i class="fa-solid fa-ranking-star text-yellow-400 mr-3"></i>Ranking do Mês</h2>
-                <p class="text-slate-400 text-sm mb-6">Mostrando as categorias mais lucrativas vendidas no mês selecionado no topo da página. <strong class="text-blue-400">Clique na linha</strong> para ver as vendas.</p>
-                
-                <div class="bg-slate-900 rounded-xl border border-slate-700 overflow-hidden shadow-inner">
-                    <table class="w-full text-left text-sm text-slate-300 whitespace-nowrap">
-                        <thead class="bg-slate-800 text-slate-400 uppercase text-xs font-bold">
+        <main id="view-ranking" class="tab-view hidden space-y-6 max-w-5xl mx-auto w-full">
+            <div class="glass-panel p-4 sm:p-6 md:p-8 rounded-2xl shadow-xl">
+                <h2 class="text-lg sm:text-xl font-bold text-white mb-2"><i class="fa-solid fa-ranking-star text-yellow-400 mr-2 sm:mr-3"></i>Ranking do Mês</h2>
+                <p class="text-slate-400 text-xs sm:text-sm mb-5">Mostrando as categorias mais lucrativas vendidas no mês selecionado no topo da página. <strong class="text-blue-400">Clique na linha</strong> para ver as vendas.</p>
+
+                <div class="bg-slate-900 rounded-xl border border-slate-700 overflow-x-auto shadow-inner w-full">
+                    <table class="w-full min-w-[540px] text-left text-xs sm:text-sm text-slate-300 whitespace-nowrap">
+                        <thead class="bg-slate-800 text-slate-400 uppercase text-[11px] sm:text-xs font-bold">
                             <tr>
-                                <th class="px-5 py-4 w-24">Posição</th>
-                                <th class="px-5 py-4">Categoria / Produto</th>
-                                <th class="px-5 py-4 text-center">Unidades</th>
-                                <th class="px-5 py-4 text-right">Faturamento</th>
-                                <th class="px-5 py-4 text-right text-emerald-400">Lucro Total</th>
+                                <th class="px-3 sm:px-5 py-3.5 w-20 sm:w-24">Posição</th>
+                                <th class="px-3 sm:px-5 py-3.5">Categoria / Produto</th>
+                                <th class="px-3 sm:px-5 py-3.5 text-center">Unidades</th>
+                                <th class="px-3 sm:px-5 py-3.5 text-right">Faturamento</th>
+                                <th class="px-3 sm:px-5 py-3.5 text-right text-emerald-400">Lucro Total</th>
                             </tr>
                         </thead>
                         <tbody id="rankingTableBody" class="divide-y divide-slate-700/50">
@@ -241,39 +262,39 @@
         </main>
 
         <!-- ABA 3: SERVIÇOS -->
-        <main id="view-services" class="tab-view hidden grid grid-cols-1 xl:grid-cols-12 gap-8">
-            <section class="xl:col-span-4 h-fit glass-panel p-6 rounded-2xl shadow-xl">
-                <h2 class="text-lg font-bold text-white mb-6 border-b border-slate-700 pb-4"><i class="fa-solid fa-wrench text-blue-400 mr-2"></i>Novo Serviço</h2>
-                <form id="srvForm" class="space-y-4">
-                    <input type="text" id="srvDesc" required placeholder="Descrição (Ex: Troca de Tela Moto G)" class="w-full bg-slate-800/50 rounded-lg p-2.5 text-white border border-slate-700">
-                    <div class="grid grid-cols-2 gap-4">
+        <main id="view-services" class="tab-view hidden grid-cols-1 xl:grid-cols-12 gap-6 sm:gap-8">
+            <section class="xl:col-span-4 h-fit glass-panel p-4 sm:p-6 rounded-2xl shadow-xl">
+                <h2 class="text-base sm:text-lg font-bold text-white mb-5 border-b border-slate-700 pb-3"><i class="fa-solid fa-wrench text-blue-400 mr-2"></i>Novo Serviço</h2>
+                <form id="srvForm" class="space-y-3.5">
+                    <input type="text" id="srvDesc" required placeholder="Descrição (Ex: Troca de Tela Moto G)" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
                             <label class="flex justify-between items-center text-xs font-semibold text-slate-400 mb-1">
                                 Custo Deslocam. (R$)
                                 <button type="button" onclick="openCalc('srvTravel')" class="text-blue-400 hover:text-blue-300"><i class="fa-solid fa-calculator"></i></button>
                             </label>
-                            <input type="number" step="0.01" id="srvTravel" placeholder="0.00" class="w-full bg-slate-800/50 rounded-lg p-2.5 text-white border border-slate-700">
+                            <input type="number" step="0.01" id="srvTravel" placeholder="0.00" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-400 mb-1">Custo Peça (R$)</label>
-                            <input type="number" step="0.01" id="srvMat" placeholder="0.00" class="w-full bg-slate-800/50 rounded-lg p-2.5 text-white border border-slate-700">
+                            <input type="number" step="0.01" id="srvMat" placeholder="0.00" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700">
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
                             <label class="block text-xs font-semibold text-emerald-400 mb-1">Valor Cobrado (R$)</label>
-                            <input type="number" step="0.01" id="srvPrice" required placeholder="0.00" class="w-full bg-emerald-900/20 rounded-lg p-2.5 text-emerald-400 border border-emerald-700">
+                            <input type="number" step="0.01" id="srvPrice" required placeholder="0.00" class="w-full bg-emerald-900/20 rounded-lg p-2.5 text-sm text-emerald-400 border border-emerald-700">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-400 mb-1">Data</label>
-                            <input type="date" id="srvDate" required class="w-full bg-slate-800/50 rounded-lg p-2.5 text-white border border-slate-700 [color-scheme:dark]">
+                            <input type="date" id="srvDate" required class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700 [color-scheme:dark]">
                         </div>
                     </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div>
                             <label class="block text-xs font-semibold text-slate-400 mb-1">Pagamento</label>
-                            <select id="srvPayment" onchange="toggleSrvPayment(this.value)" class="w-full bg-slate-800/50 rounded-lg p-2.5 text-white border border-slate-700 outline-none cursor-pointer">
+                            <select id="srvPayment" onchange="toggleSrvPayment(this.value)" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700 outline-none cursor-pointer">
                                 <option value="avista">À Vista</option>
                                 <option value="parcelado">Parcelado / Com Entrada</option>
                             </select>
@@ -282,145 +303,206 @@
                             <div class="grid grid-cols-1 gap-2">
                                 <div>
                                     <label class="block text-xs font-semibold text-emerald-400 mb-1">Valor de Entrada (R$)</label>
-                                    <input type="number" step="0.01" id="srvDownPayment" placeholder="0.00" class="w-full bg-slate-800/50 rounded-lg p-2.5 text-emerald-400 border border-slate-700">
+                                    <input type="number" step="0.01" id="srvDownPayment" placeholder="0.00" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-emerald-400 border border-slate-700">
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
-                    <div id="srvInstDetailsWrapper" class="hidden grid grid-cols-2 gap-2 mt-2">
+
+                    <div id="srvInstDetailsWrapper" class="hidden grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
                         <div>
                             <label class="block text-xs font-semibold text-slate-400 mb-1">Parcelar o resto em (x)</label>
-                            <input type="number" id="srvInstCount" value="1" min="1" class="w-full bg-slate-800/50 rounded-lg p-2.5 text-white border border-slate-700">
+                            <input type="number" id="srvInstCount" value="1" min="1" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-400 mb-1">Data 1ª Cobrança</label>
-                            <input type="date" id="srvFirstDue" class="w-full bg-slate-800/50 rounded-lg p-2.5 text-white border border-slate-700 [color-scheme:dark]">
+                            <input type="date" id="srvFirstDue" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700 [color-scheme:dark]">
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4">
-                        <input type="text" id="srvClient" placeholder="Nome do Cliente" class="w-full bg-slate-800/50 rounded-lg p-2.5 text-white border border-slate-700">
-                        <input type="text" id="srvPhone" placeholder="WhatsApp (Apenas números)" class="w-full bg-slate-800/50 rounded-lg p-2.5 text-white border border-slate-700">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <input type="text" id="srvClient" placeholder="Nome do Cliente" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700">
+                        <input type="text" id="srvPhone" placeholder="WhatsApp (Apenas números)" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700">
                     </div>
-                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg mt-2">Salvar Serviço Finalizado</button>
+                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg mt-2 text-sm">Salvar Serviço Finalizado</button>
                 </form>
             </section>
-            
-            <section class="xl:col-span-8 glass-panel p-6 rounded-2xl h-[85vh] flex flex-col">
+
+            <section class="xl:col-span-8 glass-panel p-4 sm:p-6 rounded-2xl min-h-[60vh] xl:h-[85vh] flex flex-col">
                 <div class="flex justify-between items-center mb-4 border-b border-slate-700 pb-3 gap-4">
-                    <h2 class="text-sm font-bold text-slate-300 uppercase"><i class="fa-solid fa-list-check mr-2 text-blue-400"></i>Histórico Global de Serviços</h2>
+                    <h2 class="text-xs sm:text-sm font-bold text-slate-300 uppercase"><i class="fa-solid fa-list-check mr-2 text-blue-400"></i>Histórico Global de Serviços</h2>
                 </div>
-                <div id="servicesGrid" class="flex-1 overflow-y-auto pr-2 space-y-3"></div>
+                <div id="servicesGrid" class="flex-1 overflow-y-auto pr-1 sm:pr-2 space-y-3"></div>
             </section>
         </main>
 
         <!-- ABA 4: DESPESAS -->
-        <main id="view-expenses" class="tab-view hidden grid grid-cols-1 md:grid-cols-3 gap-8">
-            <section class="glass-panel p-6 rounded-2xl h-fit">
-                <h2 class="text-lg font-bold text-white mb-6 border-b border-slate-700 pb-4"><i class="fa-solid fa-cart-shopping text-red-400 mr-2"></i>Nova Despesa Fixa</h2>
-                <form id="expenseForm" class="space-y-4">
-                    <input type="text" id="expDesc" required placeholder="Descrição (Ex: Aluguel, Internet)" class="w-full bg-slate-800/50 rounded-lg p-2.5 text-white border border-slate-700">
-                    <input type="date" id="expDate" required class="w-full bg-slate-800/50 rounded-lg p-2.5 text-white border border-slate-700 [color-scheme:dark]">
-                    <input type="number" step="0.01" id="expValue" required placeholder="Valor R$" class="w-full bg-slate-800/50 rounded-lg p-2.5 text-white border border-slate-700">
-                    <button type="submit" class="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-3 rounded-xl mt-2">Registrar Despesa</button>
+        <main id="view-expenses" class="tab-view hidden grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+            <section class="glass-panel p-4 sm:p-6 rounded-2xl h-fit">
+                <h2 class="text-base sm:text-lg font-bold text-white mb-5 border-b border-slate-700 pb-3"><i class="fa-solid fa-cart-shopping text-red-400 mr-2"></i>Nova Despesa Fixa</h2>
+                <form id="expenseForm" class="space-y-3.5">
+                    <input type="text" id="expDesc" required placeholder="Descrição (Ex: Aluguel, Internet)" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700">
+                    <input type="date" id="expDate" required class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700 [color-scheme:dark]">
+                    <input type="number" step="0.01" id="expValue" required placeholder="Valor R$" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700">
+                    <button type="submit" class="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-3 rounded-xl mt-2 text-sm">Registrar Despesa</button>
                 </form>
             </section>
-            <section class="md:col-span-2 glass-panel p-6 rounded-2xl flex flex-col h-[70vh]">
-                <h2 class="text-sm font-bold text-slate-300 uppercase mb-4 border-b border-slate-700 pb-3">Histórico Global de Despesas</h2>
-                <div id="expenseGrid" class="flex-1 overflow-y-auto pr-2 space-y-2"></div>
+            <section class="md:col-span-2 glass-panel p-4 sm:p-6 rounded-2xl flex flex-col min-h-[50vh] md:h-[70vh]">
+                <h2 class="text-xs sm:text-sm font-bold text-slate-300 uppercase mb-4 border-b border-slate-700 pb-3">Histórico Global de Despesas</h2>
+                <div id="expenseGrid" class="flex-1 overflow-y-auto pr-1 sm:pr-2 space-y-2"></div>
             </section>
         </main>
 
         <!-- ABA 5: PRÓ-LABORE -->
-        <main id="view-prolabore" class="tab-view hidden grid grid-cols-1 md:grid-cols-3 gap-8">
-            <section class="glass-panel p-6 rounded-2xl h-fit">
-                <h2 class="text-lg font-bold text-white mb-6 border-b border-slate-700 pb-4"><i class="fa-solid fa-user-tie text-blue-400 mr-2"></i>Retirada de Pró-Labore</h2>
-                <form id="prolaboreForm" class="space-y-4">
-                    <input type="text" id="proDesc" required placeholder="Descrição (Ex: Retirada Semanal / Mensal)" class="w-full bg-slate-800/50 rounded-lg p-2.5 text-white border border-slate-700">
-                    <input type="date" id="proDate" required class="w-full bg-slate-800/50 rounded-lg p-2.5 text-white border border-slate-700 [color-scheme:dark]">
-                    <input type="number" step="0.01" id="proValue" required placeholder="Valor da Retirada R$" class="w-full bg-slate-800/50 rounded-lg p-2.5 text-white border border-slate-700">
-                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl mt-2">Registrar Retirada</button>
+        <main id="view-prolabore" class="tab-view hidden grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+            <section class="glass-panel p-4 sm:p-6 rounded-2xl h-fit">
+                <h2 class="text-base sm:text-lg font-bold text-white mb-5 border-b border-slate-700 pb-3"><i class="fa-solid fa-user-tie text-blue-400 mr-2"></i>Retirada de Pró-Labore</h2>
+                <form id="prolaboreForm" class="space-y-3.5">
+                    <input type="text" id="proDesc" required placeholder="Descrição (Ex: Retirada Semanal / Mensal)" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700">
+                    <input type="date" id="proDate" required class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700 [color-scheme:dark]">
+                    <input type="number" step="0.01" id="proValue" required placeholder="Valor da Retirada R$" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700">
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl mt-2 text-sm">Registrar Retirada</button>
                 </form>
             </section>
-            <section class="md:col-span-2 glass-panel p-6 rounded-2xl flex flex-col h-[70vh]">
-                <h2 class="text-sm font-bold text-slate-300 uppercase mb-4 border-b border-slate-700 pb-3">Histórico de Pró-Labore</h2>
-                <div id="prolaboreGrid" class="flex-1 overflow-y-auto pr-2 space-y-2"></div>
+            <section class="md:col-span-2 glass-panel p-4 sm:p-6 rounded-2xl flex flex-col min-h-[50vh] md:h-[70vh]">
+                <h2 class="text-xs sm:text-sm font-bold text-slate-300 uppercase mb-4 border-b border-slate-700 pb-3">Histórico de Pró-Labore</h2>
+                <div id="prolaboreGrid" class="flex-1 overflow-y-auto pr-1 sm:pr-2 space-y-2"></div>
             </section>
         </main>
 
         <!-- ABA 6: CONFIGURAÇÕES -->
-        <main id="view-settings" class="tab-view hidden space-y-6 max-w-2xl mx-auto">
-            <div class="glass-panel p-8 rounded-2xl shadow-xl text-center">
-                <h2 class="text-2xl font-bold text-white mb-8">Backup de Dados</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <button onclick="exportBackupJSON()" class="bg-slate-700 hover:bg-slate-600 text-white py-4 rounded-xl font-bold">Salvar Backup (.json)</button>
-                    <label class="bg-slate-700 hover:bg-slate-600 text-white py-4 rounded-xl cursor-pointer font-bold">Restaurar Backup (.json)<input type="file" class="hidden" onchange="importBackupJSON(event)"></label>
+        <main id="view-settings" class="tab-view hidden space-y-6 max-w-2xl mx-auto w-full">
+            <div class="glass-panel p-5 sm:p-8 rounded-2xl shadow-xl text-center">
+                <h2 class="text-xl sm:text-2xl font-bold text-white mb-3">Backup de Dados</h2>
+                <p class="text-xs sm:text-sm text-slate-400 mb-6">Exporte ou importe seu arquivo <code class="text-blue-400">.json</code> (incluindo <code class="text-blue-400">backup_solid_tec_2026-11-20.json</code>).</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <button type="button" onclick="exportBackupJSON()" class="bg-slate-700 hover:bg-slate-600 text-white py-3.5 sm:py-4 px-4 rounded-xl font-bold text-sm transition cursor-pointer">
+                        <i class="fa-solid fa-download mr-2"></i>Salvar Backup (.json)
+                    </button>
+                    <label class="bg-blue-600 hover:bg-blue-500 text-white py-3.5 sm:py-4 px-4 rounded-xl cursor-pointer font-bold text-sm transition flex items-center justify-center">
+                        <i class="fa-solid fa-upload mr-2"></i>Restaurar Backup (.json)
+                        <input type="file" id="backupFileInput" accept=".json,application/json" class="hidden" onchange="importBackupJSON(event)">
+                    </label>
                 </div>
             </div>
         </main>
     </div>
 
     <!-- MODAL DE GERENCIAMENTO -->
-    <div id="appModal" class="no-print fixed inset-0 bg-black/80 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-slate-800 border border-slate-600 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col">
-            <div class="p-4 border-b border-slate-700 flex justify-between items-center bg-slate-900">
-                <h3 id="modalTitle" class="text-lg font-bold text-white">Gerenciar</h3>
-                <button onclick="closeModal()" class="text-slate-400 hover:text-white text-xl"><i class="fa-solid fa-xmark"></i></button>
+    <div id="appModal" class="no-print fixed inset-0 bg-black/80 hidden z-50 flex items-center justify-center p-3 sm:p-4">
+        <div class="bg-slate-800 border border-slate-600 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="p-3.5 sm:p-4 border-b border-slate-700 flex justify-between items-center bg-slate-900 shrink-0">
+                <h3 id="modalTitle" class="text-base sm:text-lg font-bold text-white truncate pr-2">Gerenciar</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-white text-xl shrink-0"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div id="modalBody" class="p-5 overflow-y-auto max-h-[85vh]">
+            <div id="modalBody" class="p-4 sm:p-5 overflow-y-auto">
                 <!-- Injetado via JS -->
             </div>
         </div>
     </div>
 
     <!-- MODAL CALCULADORA DE FRETE -->
-    <div id="calcModal" class="no-print fixed inset-0 bg-black/80 hidden z-[60] flex items-center justify-center p-4">
-        <div class="bg-slate-800 border border-slate-600 rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden flex flex-col">
-            <div class="p-4 border-b border-slate-700 flex justify-between items-center bg-slate-900">
-                <h3 class="text-lg font-bold text-white"><i class="fa-solid fa-gas-pump text-blue-400 mr-2"></i>Calculadora de Frete</h3>
+    <div id="calcModal" class="no-print fixed inset-0 bg-black/80 hidden z-[60] flex items-center justify-center p-3 sm:p-4">
+        <div class="bg-slate-800 border border-slate-600 rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="p-3.5 sm:p-4 border-b border-slate-700 flex justify-between items-center bg-slate-900 shrink-0">
+                <h3 class="text-base sm:text-lg font-bold text-white"><i class="fa-solid fa-gas-pump text-blue-400 mr-2"></i>Calculadora de Frete</h3>
                 <button onclick="closeCalc()" class="text-slate-400 hover:text-white text-xl"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="p-5 space-y-4">
+            <div class="p-4 sm:p-5 space-y-4 overflow-y-auto">
                 <input type="hidden" id="freightTarget">
                 <div>
                     <label class="block text-xs font-semibold text-slate-400 mb-1">Distância Total (Ida e Volta em Km)</label>
-                    <input type="number" step="0.1" id="calcKm" placeholder="Ex: 15.5" class="w-full bg-slate-900 rounded-lg p-2.5 text-white border border-slate-700">
+                    <input type="number" step="0.1" id="calcKm" placeholder="Ex: 15.5" class="w-full bg-slate-900 rounded-lg p-2.5 text-sm text-white border border-slate-700">
                 </div>
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div>
                         <label class="block text-xs font-semibold text-slate-400 mb-1">Consumo (Km/L)</label>
-                        <input type="number" step="0.1" id="calcKmL" placeholder="Ex: 10" class="w-full bg-slate-900 rounded-lg p-2.5 text-white border border-slate-700">
+                        <input type="number" step="0.1" id="calcKmL" placeholder="Ex: 10" class="w-full bg-slate-900 rounded-lg p-2.5 text-sm text-white border border-slate-700">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-400 mb-1">Preço Litro (R$)</label>
-                        <input type="number" step="0.01" id="calcPrice" placeholder="Ex: 5.80" class="w-full bg-slate-900 rounded-lg p-2.5 text-white border border-slate-700">
+                        <input type="number" step="0.01" id="calcPrice" placeholder="Ex: 5.80" class="w-full bg-slate-900 rounded-lg p-2.5 text-sm text-white border border-slate-700">
                     </div>
                 </div>
                 <div class="pt-2">
-                    <button type="button" onclick="applyFreight()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl shadow-lg">Calcular e Aplicar</button>
+                    <button type="button" onclick="applyFreight()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl shadow-lg text-sm">Calcular e Aplicar</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        let rawData = JSON.parse(localStorage.getItem('solidTecData')) || [];
-        let expenses = JSON.parse(localStorage.getItem('solidTecExpenses')) || [];
-        let rawServices = JSON.parse(localStorage.getItem('solidTecServices')) || [];
-        let prolabore = JSON.parse(localStorage.getItem('solidTecProlabore')) || [];
-        
-        let sales = rawData.map((s, i) => ({
-            ...s, id: s.id || Date.now() + i, serial: s.serial || '', buyDate: s.buyDate || '', saleDate: s.saleDate || '',
-            warrantyDays: s.warrantyDays || 0, custName: s.custName || '', custPhone: s.custPhone || '',
-            paymentType: s.paymentType || (s.status === 'vendido' ? 'avista' : ''), installments: s.installments || [],
-            downPayment: s.downPayment || 0, costTravel: s.costTravel || 0
-        }));
+        function safeReadJSON(key, fallback = []) {
+            try {
+                const raw = localStorage.getItem(key);
+                if (!raw) return fallback;
+                const parsed = JSON.parse(raw);
+                return Array.isArray(parsed) ? parsed : fallback;
+            } catch (e) {
+                console.warn('Falha ao ler localStorage:', key, e);
+                return fallback;
+            }
+        }
 
-        let services = rawServices.map((s, i) => ({
-            ...s, id: s.id || Date.now() + i, paymentType: s.paymentType || 'avista', installments: s.installments || [],
-            downPayment: s.downPayment || 0
-        }));
+        let rawData = safeReadJSON('solidTecData', []);
+        let expenses = safeReadJSON('solidTecExpenses', []);
+        let rawServices = safeReadJSON('solidTecServices', []);
+        let prolabore = safeReadJSON('solidTecProlabore', []);
+
+        function normalizeSales(list) {
+            return (Array.isArray(list) ? list : []).map((s, i) => ({
+                ...s,
+                id: s.id || Date.now() + i,
+                name: s.name || 'Item sem nome',
+                serial: s.serial || '',
+                buyDate: s.buyDate || '',
+                saleDate: s.saleDate || '',
+                status: s.status || 'estoque',
+                costAcq: Number(s.costAcq || 0),
+                costVar: Number(s.costVar || 0),
+                costTravel: Number(s.costTravel || 0),
+                salePrice: Number(s.salePrice || 0),
+                warrantyDays: Number(s.warrantyDays || 0),
+                custName: s.custName || '',
+                custPhone: s.custPhone || '',
+                photo: s.photo || null,
+                paymentType: s.paymentType || (s.status === 'vendido' ? 'avista' : ''),
+                installments: Array.isArray(s.installments) ? s.installments : [],
+                downPayment: Number(s.downPayment || 0)
+            }));
+        }
+
+        function normalizeServices(list) {
+            return (Array.isArray(list) ? list : []).map((s, i) => ({
+                ...s,
+                id: s.id || Date.now() + i,
+                desc: s.desc || 'Serviço',
+                costTravel: Number(s.costTravel || 0),
+                costMaterial: Number(s.costMaterial || 0),
+                price: Number(s.price || 0),
+                date: s.date || '',
+                client: s.client || '',
+                phone: s.phone || '',
+                paymentType: s.paymentType || 'avista',
+                installments: Array.isArray(s.installments) ? s.installments : [],
+                downPayment: Number(s.downPayment || 0)
+            }));
+        }
+
+        function normalizeSimpleList(list) {
+            return (Array.isArray(list) ? list : []).map((item, i) => ({
+                ...item,
+                id: item.id || Date.now() + i,
+                desc: item.desc || '',
+                date: item.date || '',
+                val: Number(item.val || 0)
+            }));
+        }
+
+        let sales = normalizeSales(rawData);
+        expenses = normalizeSimpleList(expenses);
+        let services = normalizeServices(rawServices);
+        prolabore = normalizeSimpleList(prolabore);
 
         let chartInstance = null;
         let draggedItemId = null;
@@ -430,12 +512,49 @@
         const mm = String(todayDate.getMonth() + 1).padStart(2, '0');
         document.getElementById('globalMonthFilter').value = `${yyyy}-${mm}`;
 
-        function saveToLocal() {
-            localStorage.setItem('solidTecData', JSON.stringify(sales));
-            localStorage.setItem('solidTecExpenses', JSON.stringify(expenses));
-            localStorage.setItem('solidTecServices', JSON.stringify(services));
-            localStorage.setItem('solidTecProlabore', JSON.stringify(prolabore));
-            updateBillingNotification();
+        function showStorageNotice(msg) {
+            const box = document.getElementById('storageNotice');
+            const text = document.getElementById('storageNoticeText');
+            if (box && text) {
+                text.innerHTML = msg;
+                box.classList.remove('hidden');
+            }
+        }
+
+        function saveToLocal({ stripPhotosOnQuota = true } = {}) {
+            try {
+                localStorage.setItem('solidTecData', JSON.stringify(sales));
+                localStorage.setItem('solidTecExpenses', JSON.stringify(expenses));
+                localStorage.setItem('solidTecServices', JSON.stringify(services));
+                localStorage.setItem('solidTecProlabore', JSON.stringify(prolabore));
+                updateBillingNotification();
+                return true;
+            } catch (err) {
+                const isQuota = err && (err.name === 'QuotaExceededError' || err.code === 22 || err.code === 1014);
+                if (isQuota && stripPhotosOnQuota) {
+                    const salesWithoutPhotos = sales.map(s => ({ ...s, photo: null }));
+                    try {
+                        localStorage.setItem('solidTecData', JSON.stringify(salesWithoutPhotos));
+                        localStorage.setItem('solidTecExpenses', JSON.stringify(expenses));
+                        localStorage.setItem('solidTecServices', JSON.stringify(services));
+                        localStorage.setItem('solidTecProlabore', JSON.stringify(prolabore));
+                        updateBillingNotification();
+                        showStorageNotice(
+                            '<strong>Aviso de espaço no navegador:</strong> as fotos em Base64 ultrapassaram o limite do <code>localStorage</code>. Seus registros financeiros foram salvos sem as fotos pesadas no armazenamento local (e continuam intactos no seu arquivo <code>.json</code> de backup).'
+                        );
+                        return true;
+                    } catch (err2) {
+                        showStorageNotice(
+                            '<strong>Atenção:</strong> o limite do navegador foi atingido. Seus dados continuam carregados nesta aba, mas recomenda-se salvar um novo backup <code>.json</code>.'
+                        );
+                        updateBillingNotification();
+                        return false;
+                    }
+                }
+                showStorageNotice('<strong>Erro ao salvar no navegador:</strong> verifique o espaço disponível ou exporte seu backup <code>.json</code>.');
+                updateBillingNotification();
+                return false;
+            }
         }
 
         function refreshMonthlyData() {
@@ -446,11 +565,18 @@
         }
 
         function switchTab(tabId) {
-            document.querySelectorAll('.tab-view').forEach(el => el.classList.add('hidden'));
-            document.getElementById('view-' + tabId).classList.remove('hidden');
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.className = "px-4 py-2 text-sm font-bold rounded-lg text-slate-400 hover:text-white hover:bg-slate-700 transition tab-btn");
-            document.getElementById('tab-' + tabId).className = "px-4 py-2 text-sm font-bold rounded-lg bg-blue-500/20 text-blue-400 transition tab-btn";
-            
+            document.querySelectorAll('.tab-view').forEach(el => {
+                el.classList.add('hidden');
+                el.classList.remove('grid');
+            });
+            const activeEl = document.getElementById('view-' + tabId);
+            activeEl.classList.remove('hidden');
+            if (tabId === 'products' || tabId === 'services' || tabId === 'expenses' || tabId === 'prolabore') {
+                activeEl.classList.add('grid');
+            }
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.className = "px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold rounded-lg text-slate-400 hover:text-white hover:bg-slate-700 transition tab-btn shrink-0");
+            document.getElementById('tab-' + tabId).className = "px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold rounded-lg bg-blue-500/20 text-blue-400 transition tab-btn shrink-0";
+
             if(tabId === 'dashboard') updateDashboard();
             if(tabId === 'products') renderProductsGrid();
             if(tabId === 'services') renderServicesGrid();
@@ -464,57 +590,19 @@
         document.getElementById('proDate').valueAsDate = new Date();
         document.getElementById('srvDate').valueAsDate = new Date();
         document.getElementById('newProdSaleDate').valueAsDate = new Date();
-        
+
         let nextMonth = new Date();
         nextMonth.setMonth(nextMonth.getMonth() + 1);
         document.getElementById('srvFirstDue').valueAsDate = nextMonth;
         document.getElementById('newProdFirstDue').valueAsDate = nextMonth;
 
-        const formatBRL = (val) => new Intl.NumberFormat('pt-BR', {style: 'currency', currency: 'BRL'}).format(val);
+        const formatBRL = (val) => new Intl.NumberFormat('pt-BR', {style: 'currency', currency: 'BRL'}).format(Number(val || 0));
         const formatDataBR = (dateStr) => {
             if(!dateStr || dateStr === '-') return 'N/A';
-            const [y, m, d] = dateStr.split('-');
-            return `${d}/${m}/${y}`;
-        };
-
-        // SISTEMA DE NOTIFICAÇÃO E COBRANÇAS
-        function getPendingBillings() {
-            let pending = [];
-            const todayStr = new Date().toISOString().split('T')[0];
-
-            sales.forEach(sale => {
-                if(sale.paymentType === 'parcelado') {
-                    sale.installments.forEach(inst => {
-                        if(!inst.isPaid && inst.dueDate <= todayStr) {
-                            pending.push({ type: 'sale', item: sale, inst: inst });
-                        }
-                    });
-                }
-            });
-
-            services.forEach(srv => {
-                if(srv.paymentType === 'parcelado') {
-                    srv.installments.forEach(inst => {
-                        if(!inst.isPaid && inst.dueDate <= todayStr) {
-                            pending.push({ type: 'service', item: srv, inst: inst });
-                        }
-                    });
-                }
-            });
-
-            pending.sort((a,b) => new Date(a.inst.dueDate) - new Date(b.inst.dueDate));
-            return pending;
-        }
-
-        function updateBillingNotification() {
-            const pending = getPendingBillings();
-            const btn = document.getElementById('btnNotif');
-            const countStr = document.getElementById('notifCount');
-            
-            if(pending.length > 0) {
-                btn.classList.remove('hidden');
-                countStr.innerText = pending.length;
-                document.title = `(${pending.length}) Solid Tec | Sistema de Gestão`;
+            const parts = String(dateStr).split('-');
+            if (parts.length !== 3) return dateStr;
+            const [y, m, d] = parts;
+            return `${d}/${m}/${y}`; };  // SISTEMA DE NOTIFICAÇÃO E COBRANÇAS function getPendingBillings() { let pending = []; const todayStr = new Date().toISOString().split('T')[0];  sales.forEach(sale => { if(sale.paymentType === 'parcelado') { (sale.installments \vert{}\vert{} []).forEach(inst => { if(!inst.isPaid && inst.dueDate <= todayStr) { pending.push({ type: 'sale', item: sale, inst: inst }); } }); } });  services.forEach(srv => { if(srv.paymentType === 'parcelado') { (srv.installments \vert{}\vert{} []).forEach(inst => { if(!inst.isPaid && inst.dueDate <= todayStr) { pending.push({ type: 'service', item: srv, inst: inst }); } }); } });  pending.sort((a,b) => new Date(a.inst.dueDate) - new Date(b.inst.dueDate)); return pending; }  function updateBillingNotification() { const pending = getPendingBillings(); const btn = document.getElementById('btnNotif'); const countStr = document.getElementById('notifCount');  if(pending.length > 0) { btn.classList.remove('hidden'); countStr.innerText = pending.length; document.title = `(${pending.length}) Solid Tec | Sistema de Gestão`;
             } else {
                 btn.classList.add('hidden');
                 document.title = 'Solid Tec | Sistema de Gestão';
@@ -524,9 +612,9 @@
         window.openBillingCenter = function() {
             const pending = getPendingBillings();
             document.getElementById('modalTitle').innerHTML = '<i class="fa-solid fa-bell text-red-400 mr-2 animate-pulse"></i>Central de Cobranças';
-            
+
             let html = '<div class="space-y-3">';
-            
+
             if(pending.length === 0) {
                 html += '<p class="text-emerald-400 text-center text-sm font-bold bg-emerald-900/30 p-4 rounded-xl border border-emerald-700/50">🎉 Nenhuma cobrança pendente para hoje ou atrasada!</p>';
             } else {
@@ -534,47 +622,46 @@
                     const itemName = p.type === 'sale' ? p.item.name : p.item.desc;
                     const clientName = (p.type === 'sale' ? p.item.custName : p.item.client) || 'Cliente Padrão';
                     const phone = (p.type === 'sale' ? p.item.custPhone : p.item.phone) || '';
-                    
+
                     const todayStr = new Date().toISOString().split('T')[0];
                     const isOverdue = p.inst.dueDate < todayStr;
                     const statusBadge = isOverdue ? '<span class="bg-red-500/20 text-red-400 text-[10px] px-2 py-0.5 rounded font-bold uppercase">Atrasado</span>' : '<span class="bg-yellow-500/20 text-yellow-400 text-[10px] px-2 py-0.5 rounded font-bold uppercase">Vence Hoje</span>';
 
                     let btnWhatsApp = '';
                     if(phone.trim() !== '') {
-                        const foneLimpo = phone.replace(/\D/g, ''); 
-                        const msg = `Olá ${clientName}, tudo bem? Aqui é da Solid Tec. Passando para lembrar sobre o vencimento da sua parcela ${p.inst.num} referente ao ${itemName} no valor de ${formatBRL(p.inst.amount)}.`;
+                        const foneLimpo = phone.replace(/\D/g, '');
+                        const msg = `Olá ${clientName}, tudo bem? Aqui é da Solid Tec. Passando para lembrar sobre o vencimento da sua parcela ${p.inst.num} referente ao ${itemName} no valor de${formatBRL(p.inst.amount)}.`;
                         btnWhatsApp = `<a href="https://wa.me/55${foneLimpo}?text=${encodeURIComponent(msg)}" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold py-2 px-3 rounded flex items-center gap-2 transition" title="Enviar Cobrança"><i class="fa-brands fa-whatsapp text-sm"></i></a>`;
                     } else {
                         btnWhatsApp = `<span class="text-xs text-slate-500 italic px-2">Sem WhatsApp</span>`;
                     }
 
-                    const btnPay = `<button onclick="payFromBillingCenter('${p.type}', ${p.item.id}, ${p.inst.id})" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold py-2 px-3 rounded flex items-center gap-2 transition"><i class="fa-solid fa-check"></i> Receber</button>`;
+                    const btnPay = `<button onclick="payFromBillingCenter('${p.type}', ${p.item.id},${p.inst.id})" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold py-2 px-3 rounded flex items-center gap-2 transition"><i class="fa-solid fa-check"></i> Receber</button>`;
 
                     html += `
                         <div class="bg-slate-900 p-3 rounded-xl border border-slate-700 flex flex-col gap-2 relative overflow-hidden">
                             <div class="absolute left-0 top-0 bottom-0 w-1 ${isOverdue ? 'bg-red-500' : 'bg-yellow-500'}"></div>
-                            <div class="flex justify-between items-start pl-2">
-                                <div>
-                                    <h4 class="text-white font-bold text-sm">${clientName}</h4>
-                                    <p class="text-[11px] text-slate-400">${itemName}</p>
+                            <div class="flex justify-between items-start pl-2 gap-2">
+                                <div class="min-w-0">
+                                    <h4 class="text-white font-bold text-sm truncate">${clientName}</h4>
+                                    <p class="text-[11px] text-slate-400 truncate">${itemName}</p>
                                 </div>
                                 ${statusBadge}
                             </div>
-                            <div class="flex justify-between items-center text-xs pl-2 border-t border-slate-800 pt-2 mt-1">
+                            <div class="flex flex-wrap justify-between items-center text-xs pl-2 border-t border-slate-800 pt-2 mt-1 gap-2">
                                 <div>
                                     <p class="text-slate-300 font-bold">${p.inst.num}ª Parcela: <span class="text-red-400">${formatBRL(p.inst.amount)}</span></p>
                                     <p class="text-[10px] text-slate-500 mt-0.5">Vencimento: ${formatDataBR(p.inst.dueDate)}</p>
                                 </div>
                                 <div class="flex gap-2 items-center">
-                                    ${btnPay}
-                                    ${btnWhatsApp}
+                                    ${btnPay}${btnWhatsApp}
                                 </div>
                             </div>
                         </div>
                     `;
                 });
             }
-            
+
             html += '</div>';
             document.getElementById('modalBody').innerHTML = html;
             document.getElementById('appModal').classList.remove('hidden');
@@ -588,13 +675,14 @@
                 inst.isPaid = true;
                 saveToLocal();
                 refreshMonthlyData();
-                openBillingCenter(); 
+                openBillingCenter();
                 if(type === 'sale') renderProductsGrid(); else renderServicesGrid();
             }
         }
 
-        // DRAG AND DROP
+        // DRAG AND DROP (apenas em telas maiores para não conflitar com scroll touch no mobile)
         window.drag = function(e, id) {
+            if (window.innerWidth < 768) return;
             draggedItemId = id;
             e.dataTransfer.effectAllowed = "move";
             setTimeout(() => { e.target.classList.add('opacity-40', 'border-blue-500'); }, 0);
@@ -623,7 +711,7 @@
             document.getElementById('freightTarget').value = targetId;
             document.getElementById('calcKmL').value = localStorage.getItem('solidTecKmL') || '';
             document.getElementById('calcPrice').value = localStorage.getItem('solidTecFuelPrice') || '';
-            document.getElementById('calcKm').value = ''; 
+            document.getElementById('calcKm').value = '';
             document.getElementById('calcModal').classList.remove('hidden');
         }
         window.closeCalc = function() { document.getElementById('calcModal').classList.add('hidden'); }
@@ -637,8 +725,10 @@
                 if (target && document.getElementById(target)) {
                     document.getElementById(target).value = cost.toFixed(2);
                 }
-                localStorage.setItem('solidTecKmL', kmL);
-                localStorage.setItem('solidTecFuelPrice', price);
+                try {
+                    localStorage.setItem('solidTecKmL', kmL);
+                    localStorage.setItem('solidTecFuelPrice', price);
+                } catch (e) {}
                 closeCalc();
             } else {
                 alert('Por favor, preencha todos os campos corretamente!');
@@ -656,11 +746,11 @@
         document.getElementById('salesForm').addEventListener('submit', (e) => {
             e.preventDefault();
             const status = document.getElementById('prodInitialStatus').value;
-            
+
             const newSale = {
                 id: Date.now(), name: document.getElementById('prodName').value, serial: document.getElementById('prodSerial').value,
                 buyDate: document.getElementById('buyDate').value, status: status,
-                costAcq: parseFloat(document.getElementById('costAcq').value || 0), 
+                costAcq: parseFloat(document.getElementById('costAcq').value || 0),
                 costVar: parseFloat(document.getElementById('costVar').value || 0),
                 costTravel: parseFloat(document.getElementById('costTravelProd').value || 0),
                 salePrice: 0, saleDate: '', warrantyDays: 0, custName: '', custPhone: '', photo: null, paymentType: 'avista', installments: [], downPayment: 0
@@ -672,12 +762,12 @@
                 newSale.paymentType = document.getElementById('newProdPaymentType').value;
                 newSale.custName = document.getElementById('newProdCustName').value;
                 newSale.custPhone = document.getElementById('newProdCustPhone').value;
-                
+
                 if (newSale.paymentType === 'parcelado') {
                     newSale.downPayment = parseFloat(document.getElementById('newProdDownPayment').value || 0);
                     const remaining = newSale.salePrice - newSale.downPayment;
                     const count = parseInt(document.getElementById('newProdInstCount').value);
-                    
+
                     if (remaining > 0 && count > 0) {
                         const valPerInst = remaining / count;
                         const firstDueStr = document.getElementById('newProdFirstDue').value || newSale.saleDate;
@@ -712,14 +802,14 @@
             }
 
             function finalizeAdd() {
-                saveToLocal(); 
-                e.target.reset(); 
+                saveToLocal();
+                e.target.reset();
                 document.getElementById('buyDate').valueAsDate = new Date();
                 document.getElementById('newProdSaleDate').valueAsDate = new Date();
                 document.getElementById('newProdFirstDue').valueAsDate = nextMonth;
                 toggleNewProdSoldFields('estoque');
                 toggleNewProdPayment('avista');
-                renderProductsGrid(); 
+                renderProductsGrid();
                 refreshMonthlyData();
                 alert(status === 'vendido' ? "Produto registrado como vendido e atualizado!" : "Aparelho adicionado ao estoque!");
             }
@@ -727,7 +817,7 @@
 
         window.toggleSrvPayment = function(val) {
             document.getElementById('srvInstWrapper').className = val === 'parcelado' ? 'block' : 'hidden';
-            document.getElementById('srvInstDetailsWrapper').className = val === 'parcelado' ? 'grid grid-cols-2 gap-2 mt-2' : 'hidden';
+            document.getElementById('srvInstDetailsWrapper').className = val === 'parcelado' ? 'grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2' : 'hidden';
         }
 
         document.getElementById('srvForm').addEventListener('submit', (e) => {
@@ -735,15 +825,15 @@
             const price = parseFloat(document.getElementById('srvPrice').value || 0);
             const pType = document.getElementById('srvPayment').value;
             const date = document.getElementById('srvDate').value;
-            
+
             let insts = [];
             let dPayment = 0;
-            
+
             if(pType === 'parcelado') {
                 dPayment = parseFloat(document.getElementById('srvDownPayment').value || 0);
                 const remaining = price - dPayment;
                 const count = parseInt(document.getElementById('srvInstCount').value);
-                
+
                 if (remaining > 0 && count > 0) {
                     const valPerInst = remaining / count;
                     const firstDueStr = document.getElementById('srvFirstDue').value || date;
@@ -762,7 +852,7 @@
                 client: document.getElementById('srvClient').value, phone: document.getElementById('srvPhone').value,
                 paymentType: pType, installments: insts, downPayment: dPayment
             });
-            saveToLocal(); e.target.reset(); 
+            saveToLocal(); e.target.reset();
             document.getElementById('srvDate').valueAsDate = new Date();
             document.getElementById('srvFirstDue').valueAsDate = nextMonth;
             toggleSrvPayment('avista');
@@ -823,779 +913,4 @@
                     <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 space-y-3">
                         <p class="text-xs font-bold text-slate-300 uppercase">Informações do Aparelho</p>
                         <div>
-                            <label class="block text-xs font-semibold text-slate-400 mb-1">Nome do Produto / Aparelho</label>
-                            <input type="text" id="mProdName" value="${sale.name}" required class="w-full bg-slate-800 rounded-lg p-2.5 text-white border border-slate-600 outline-none">
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-400 mb-1">IMEI / Número Série</label>
-                                <input type="text" id="mProdSerial" value="${sale.serial || ''}" class="w-full bg-slate-800 rounded-lg p-2.5 text-white border border-slate-600 outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-400 mb-1">Data de Entrada</label>
-                                <input type="date" id="mBuyDate" value="${sale.buyDate || ''}" required class="w-full bg-slate-800 rounded-lg p-2.5 text-white border border-slate-600 outline-none [color-scheme:dark]">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700">
-                        <p class="text-xs font-bold text-slate-300 uppercase mb-3">Custos</p>
-                        <div class="grid grid-cols-3 gap-3">
-                            <div>
-                                <label class="block text-[11px] font-semibold text-slate-400 mb-1">Base (R$)</label>
-                                <input type="number" step="0.01" id="mCostAcq" value="${sale.costAcq}" class="w-full bg-slate-800 rounded-lg p-2 text-white border border-slate-600 outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-[11px] font-semibold text-slate-400 mb-1">Peças (R$)</label>
-                                <input type="number" step="0.01" id="mCostVar" value="${sale.costVar}" class="w-full bg-slate-800 rounded-lg p-2 text-white border border-slate-600 outline-none">
-                            </div>
-                            <div>
-                                <label class="flex justify-between items-center text-[11px] font-semibold text-slate-400 mb-1">Frete <button type="button" onclick="openCalc('mCostTravel')" class="text-blue-400 hover:text-blue-300"><i class="fa-solid fa-calculator"></i></button></label>
-                                <input type="number" step="0.01" id="mCostTravel" value="${sale.costTravel || 0}" class="w-full bg-slate-800 rounded-lg p-2 text-white border border-slate-600 outline-none">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-400 mb-1">Status do Aparelho</label>
-                        <select id="mStatus" onchange="toggleModalFields(this.value)" class="w-full bg-slate-800 rounded-lg p-2.5 text-white border border-slate-600 outline-none cursor-pointer">
-                            <option value="estoque" ${sale.status === 'estoque' ? 'selected' : ''}>📦 Em Estoque</option>
-                            <option value="vendido" ${sale.status === 'vendido' ? 'selected' : ''}>✅ Vendido</option>
-                        </select>
-                    </div>
-
-                    <div id="mSoldFields" class="${sale.status === 'vendido' ? 'block' : 'hidden'} space-y-4 pt-4 border-t border-slate-700">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-semibold text-emerald-400 mb-1">Valor Venda Total (R$)</label>
-                                <input type="number" step="0.01" id="mSalePrice" value="${sale.salePrice || ''}" class="w-full bg-slate-900 rounded-lg p-2.5 text-emerald-400 border border-slate-700">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-400 mb-1">Data da Venda</label>
-                                <input type="date" id="mSaleDate" value="${sale.saleDate || ''}" class="w-full bg-slate-900 rounded-lg p-2.5 text-white border border-slate-700 [color-scheme:dark]">
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-1 gap-4">
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-400 mb-1">Pagamento</label>
-                                <select id="mPaymentType" onchange="toggleProductPaymentFields(this.value)" class="w-full bg-slate-900 rounded-lg p-2.5 text-white border border-slate-700 cursor-pointer">
-                                    <option value="avista" ${sale.paymentType === 'avista' ? 'selected' : ''}>À Vista</option>
-                                    <option value="parcelado" ${sale.paymentType === 'parcelado' ? 'selected' : ''}>Parcelado / Com Entrada</option>
-                                </select>
-                            </div>
-                            <div id="mInstWrapper" class="${sale.paymentType === 'parcelado' ? 'block' : 'hidden'}">
-                                <div class="grid grid-cols-1 gap-2 mb-2">
-                                    <div>
-                                        <label class="block text-xs font-semibold text-emerald-400 mb-1">Valor de Entrada (R$)</label>
-                                        <input type="number" step="0.01" id="mDownPayment" value="${sale.downPayment || ''}" placeholder="0.00" class="w-full bg-slate-900 rounded-lg p-2.5 text-emerald-400 border border-slate-700">
-                                    </div>
-                                </div>
-                                <div class="grid grid-cols-2 gap-2">
-                                    <div>
-                                        <label class="block text-xs font-semibold text-slate-400 mb-1">Parcelar Resto (x)</label>
-                                        <input type="number" id="mInstCount" value="${sale.installments.length || 1}" min="1" class="w-full bg-slate-900 rounded-lg p-2.5 text-white border border-slate-700">
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-semibold text-slate-400 mb-1">Data 1ª Cobrança</label>
-                                        <input type="date" id="mFirstDue" value="${firstDueVal}" class="w-full bg-slate-900 rounded-lg p-2.5 text-white border border-slate-700 [color-scheme:dark]">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <input type="text" id="mCustName" value="${sale.custName || ''}" placeholder="Nome Cliente" class="w-full bg-slate-900 rounded-lg p-2.5 text-white border border-slate-700">
-                            <input type="text" id="mCustPhone" value="${sale.custPhone || ''}" placeholder="WhatsApp" class="w-full bg-slate-900 rounded-lg p-2.5 text-white border border-slate-700">
-                        </div>
-                    </div>
-                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl mt-4 shadow-lg"><i class="fa-solid fa-floppy-disk mr-2"></i>Salvar Alterações</button>
-                </form>
-            `;
-
-            if(sale.status === 'vendido' && sale.paymentType === 'parcelado') {
-                html += `<div class="mt-6 border-t border-slate-700 pt-4"><h4 class="text-sm font-bold text-slate-300 mb-3"><i class="fa-solid fa-money-check-dollar text-emerald-400 mr-2"></i>Controle de Parcelas</h4><div class="space-y-2">`;
-                if (sale.downPayment > 0) {
-                    html += `<div class="flex justify-between items-center bg-emerald-900/30 p-2.5 rounded border border-emerald-700/50 text-sm"><div><p class="text-emerald-400 font-bold">Entrada na Compra</p></div><span class="text-emerald-400 font-bold">${formatBRL(sale.downPayment)} (Pago)</span></div>`;
-                }
-                sale.installments.forEach(inst => {
-                    let btnWhatsApp = '';
-                    if(sale.custPhone && sale.custPhone.trim() !== '') {
-                        const foneLimpo = sale.custPhone.replace(/\D/g, ''); 
-                        const msg = `Olá ${sale.custName || ''}, tudo bem? Aqui é da Solid Tec. Passando para lembrar sobre a sua parcela ${inst.num} referente ao ${sale.name} no valor de ${formatBRL(inst.amount)}. O vencimento é dia ${formatDataBR(inst.dueDate)}.`;
-                        btnWhatsApp = `<a href="https://wa.me/55${foneLimpo}?text=${encodeURIComponent(msg)}" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white p-2 rounded transition" title="Enviar Cobrança no WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>`;
-                    }
-                    html += `
-                        <div class="flex justify-between items-center bg-slate-900 p-2.5 rounded border border-slate-700 text-sm">
-                            <div>
-                                <p class="text-white font-bold">${inst.num}ª Parcela - ${formatBRL(inst.amount)}</p>
-                                <div class="flex items-center gap-1 mt-0.5" title="Clique para editar a data">
-                                    <span class="text-xs text-slate-400">Cobrança:</span>
-                                    <input type="date" onchange="updateInstDate('sale', ${sale.id}, ${inst.id}, this.value)" value="${inst.dueDate}" class="bg-transparent text-xs text-blue-400 font-bold outline-none border-b border-dashed border-slate-500 hover:border-blue-400 cursor-pointer p-0 m-0 [color-scheme:dark]">
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                ${!inst.isPaid && btnWhatsApp !== '' ? btnWhatsApp : ''}
-                                <button type="button" onclick="toggleInstPaid('sale', ${sale.id}, ${inst.id})" class="px-3 py-2 rounded text-xs font-bold transition ${inst.isPaid ? 'bg-emerald-600 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}">${inst.isPaid ? '✅ Recebido' : 'Pendente'}</button>
-                            </div>
-                        </div>`;
-                });
-                html += `</div></div>`;
-            }
-            
-            document.getElementById('modalBody').innerHTML = html;
-            document.getElementById('appModal').classList.remove('hidden');
-            if(sale.status === 'estoque') document.getElementById('mSaleDate').valueAsDate = new Date();
-        }
-
-        window.openServiceManager = function(id) {
-            const srv = services.find(s => s.id === id);
-            document.getElementById('modalTitle').innerText = 'Serviço: ' + srv.desc;
-            let html = `<div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-sm mb-4"><p><strong class="text-white">Custo Total:</strong> <span class="text-red-400">${formatBRL(srv.costTravel + srv.costMaterial)}</span></p><p><strong class="text-white">Valor Total Cobrado:</strong> <span class="text-emerald-400">${formatBRL(srv.price)}</span></p><p><strong class="text-white">Cliente:</strong> ${srv.client || 'N/A'}</p></div>`;
-            
-            if(srv.paymentType === 'parcelado') {
-                html += `<div class="mt-2"><h4 class="text-sm font-bold text-slate-300 mb-3"><i class="fa-solid fa-money-check-dollar text-emerald-400 mr-2"></i>Controle de Parcelas</h4><div class="space-y-2">`;
-                if (srv.downPayment > 0) {
-                    html += `<div class="flex justify-between items-center bg-emerald-900/30 p-2.5 rounded border border-emerald-700/50 text-sm"><div><p class="text-emerald-400 font-bold">Sinal / Entrada</p></div><span class="text-emerald-400 font-bold">${formatBRL(srv.downPayment)} (Pago)</span></div>`;
-                }
-                srv.installments.forEach(inst => {
-                    let btnWhatsApp = '';
-                    if(srv.phone && srv.phone.trim() !== '') {
-                        const foneLimpo = srv.phone.replace(/\D/g, ''); 
-                        const msg = `Olá ${srv.client || ''}, tudo bem? Aqui é da Solid Tec. Passando para lembrar sobre a sua parcela ${inst.num} referente ao serviço de ${srv.desc} no valor de ${formatBRL(inst.amount)}. O vencimento é dia ${formatDataBR(inst.dueDate)}.`;
-                        btnWhatsApp = `<a href="https://wa.me/55${foneLimpo}?text=${encodeURIComponent(msg)}" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white p-2 rounded transition" title="Enviar Cobrança no WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>`;
-                    }
-                    html += `
-                        <div class="flex justify-between items-center bg-slate-900 p-2.5 rounded border border-slate-700 text-sm">
-                            <div>
-                                <p class="text-white font-bold">${inst.num}ª Parcela - ${formatBRL(inst.amount)}</p>
-                                <div class="flex items-center gap-1 mt-0.5" title="Clique para editar a data">
-                                    <span class="text-xs text-slate-400">Cobrança:</span>
-                                    <input type="date" onchange="updateInstDate('service', ${srv.id}, ${inst.id}, this.value)" value="${inst.dueDate}" class="bg-transparent text-xs text-blue-400 font-bold outline-none border-b border-dashed border-slate-500 hover:border-blue-400 cursor-pointer p-0 m-0 [color-scheme:dark]">
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                ${!inst.isPaid && btnWhatsApp !== '' ? btnWhatsApp : ''}
-                                <button type="button" onclick="toggleInstPaid('service', ${srv.id}, ${inst.id})" class="px-3 py-2 rounded text-xs font-bold transition ${inst.isPaid ? 'bg-emerald-600 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}">${inst.isPaid ? '✅ Recebido' : 'Pendente'}</button>
-                            </div>
-                        </div>`;
-                });
-                html += `</div></div>`;
-            } else {
-                html += `<p class="text-emerald-400 text-center font-bold mt-4">✅ Serviço pago à vista e finalizado.</p>`;
-            }
-            document.getElementById('modalBody').innerHTML = html;
-            document.getElementById('appModal').classList.remove('hidden');
-        }
-
-        window.toggleModalFields = function(val) { document.getElementById('mSoldFields').className = val === 'vendido' ? 'block space-y-4 pt-4 border-t border-slate-700' : 'hidden'; }
-        window.toggleProductPaymentFields = function(val) { document.getElementById('mInstWrapper').className = val === 'parcelado' ? 'block' : 'hidden'; }
-
-        window.saveItemChanges = function(e, id) {
-            e.preventDefault();
-            const sale = sales.find(s => s.id === id);
-            const name = document.getElementById('mProdName').value;
-            const serial = document.getElementById('mProdSerial').value;
-            const buyDate = document.getElementById('mBuyDate').value;
-            const status = document.getElementById('mStatus').value;
-            const costAcq = parseFloat(document.getElementById('mCostAcq').value || 0);
-            const costVar = parseFloat(document.getElementById('mCostVar').value || 0);
-            const costTravel = parseFloat(document.getElementById('mCostTravel').value || 0);
-            const file = document.getElementById('mProdPhoto').files[0];
-
-            function applySave(newPhoto) {
-                sale.name = name; sale.serial = serial; sale.buyDate = buyDate;
-                sale.costAcq = costAcq; sale.costVar = costVar; sale.costTravel = costTravel; sale.status = status;
-                if (newPhoto !== undefined) sale.photo = newPhoto;
-
-                if (status === 'vendido') {
-                    const newPrice = parseFloat(document.getElementById('mSalePrice').value || 0);
-                    const pType = document.getElementById('mPaymentType').value;
-                    if(pType === 'parcelado') {
-                        const dPayment = parseFloat(document.getElementById('mDownPayment').value || 0);
-                        const remaining = newPrice - dPayment;
-                        const count = parseInt(document.getElementById('mInstCount').value);
-                        const firstDueStr = document.getElementById('mFirstDue').value || document.getElementById('mSaleDate').value;
-                        let insts = []; sale.downPayment = dPayment;
-                        if (remaining > 0 && count > 0) {
-                            const valPerInst = remaining / count;
-                            const baseDate = new Date(firstDueStr + 'T00:00:00');
-                            for(let i=1; i<=count; i++) {
-                                let d = new Date(baseDate); d.setMonth(d.getMonth() + (i - 1));
-                                insts.push({ id: Date.now()+i, num: i, amount: valPerInst, dueDate: d.toISOString().split('T')[0], isPaid: false });
-                            }
-                        }
-                        sale.installments = insts;
-                    } else { sale.installments = []; sale.downPayment = 0; }
-                    sale.salePrice = newPrice; sale.paymentType = pType; sale.saleDate = document.getElementById('mSaleDate').value;
-                    sale.custName = document.getElementById('mCustName').value; sale.custPhone = document.getElementById('mCustPhone').value;
-                } else {
-                    sale.salePrice = 0; sale.saleDate = ''; sale.custName = ''; sale.custPhone = ''; sale.paymentType = 'avista'; sale.installments = []; sale.downPayment = 0;
-                }
-                saveToLocal(); closeModal(); renderProductsGrid(); refreshMonthlyData();
-            }
-
-            if(file) {
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        canvas.width = 250; canvas.height = img.height * (250 / img.width);
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                        applySave(canvas.toDataURL('image/jpeg', 0.6));
-                    };
-                    img.src = ev.target.result;
-                };
-                reader.readAsDataURL(file);
-            } else { applySave(); }
-        }
-
-        window.toggleInstPaid = function(type, itemId, instId) {
-            const list = type === 'sale' ? sales : services;
-            const item = list.find(i => i.id === itemId);
-            const inst = item.installments.find(i => i.id === instId);
-            inst.isPaid = !inst.isPaid;
-            saveToLocal(); refreshMonthlyData();
-            type === 'sale' ? openItemManager(itemId) : openServiceManager(itemId);
-        }
-
-        // MOVIMENTAÇÃO DO DIA
-        window.openDayDetails = function(fullDate) {
-            const daySales = sales.filter(s => s.status === 'vendido' && (s.saleDate === fullDate || (s.downPayment > 0 && s.saleDate === fullDate) || s.installments.some(i => i.isPaid && i.dueDate === fullDate)));
-            const dayServices = services.filter(srv => srv.date === fullDate || (srv.downPayment > 0 && srv.date === fullDate) || srv.installments.some(i => i.isPaid && i.dueDate === fullDate));
-            const dayExpenses = expenses.filter(e => e.date === fullDate);
-            const dayProlabore = prolabore.filter(p => p.date === fullDate);
-
-            document.getElementById('modalTitle').innerHTML = `<i class="fa-solid fa-calendar-day mr-2 text-blue-400"></i>Movimentação do dia: ${formatDataBR(fullDate)}`;
-
-            let html = '<div class="space-y-3">';
-
-            if(daySales.length === 0 && dayServices.length === 0 && dayExpenses.length === 0 && dayProlabore.length === 0) {
-                html += '<p class="text-slate-400 text-center text-sm">Nenhum registro encontrado para este dia.</p>';
-            }
-
-            daySales.forEach(sale => {
-                let cost = (sale.costAcq || 0) + (sale.costVar || 0) + (sale.costTravel || 0);
-                let profit = (sale.salePrice || 0) - cost;
-                html += `
-                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 flex flex-col gap-2 relative overflow-hidden">
-                        <div class="absolute left-0 top-0 bottom-0 w-1 ${profit >= 0 ? 'bg-emerald-500' : 'bg-red-500'}"></div>
-                        <div class="flex justify-between items-start pl-2">
-                            <span class="bg-blue-500/20 text-blue-400 text-[10px] px-2 py-0.5 rounded font-bold uppercase">Produto</span>
-                            <h4 class="text-white font-bold text-sm">${sale.name}</h4>
-                        </div>
-                        <div class="flex justify-between items-end text-xs pt-1 pl-2 border-t border-slate-800 mt-1 pt-2">
-                            <div>Custo Total: ${formatBRL(cost)} | Venda Total: ${formatBRL(sale.salePrice)}</div>
-                            <div class="text-right"><span class="${profit >= 0 ? 'text-emerald-400' : 'text-red-400'} font-bold text-sm">Lucro Total: ${formatBRL(profit)}</span></div>
-                        </div>
-                    </div>
-                `;
-            });
-
-            dayServices.forEach(srv => {
-                let cost = srv.costTravel + srv.costMaterial;
-                let profit = srv.price - cost;
-                html += `
-                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 flex flex-col gap-2 relative overflow-hidden">
-                        <div class="absolute left-0 top-0 bottom-0 w-1 ${profit >= 0 ? 'bg-emerald-500' : 'bg-red-500'}"></div>
-                        <div class="flex justify-between items-start pl-2">
-                            <span class="bg-purple-500/20 text-purple-400 text-[10px] px-2 py-0.5 rounded font-bold uppercase">Serviço</span>
-                            <h4 class="text-white font-bold text-sm">${srv.desc}</h4>
-                        </div>
-                        <div class="flex justify-between items-end text-xs pt-1 pl-2 border-t border-slate-800 mt-1 pt-2">
-                            <div>Custo: ${formatBRL(cost)} | Cobrado: ${formatBRL(srv.price)}</div>
-                            <div class="text-right"><span class="${profit >= 0 ? 'text-emerald-400' : 'text-red-400'} font-bold text-sm">Lucro Total: ${formatBRL(profit)}</span></div>
-                        </div>
-                    </div>
-                `;
-            });
-
-            dayExpenses.forEach(exp => {
-                html += `
-                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 flex flex-col gap-2 relative overflow-hidden">
-                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-red-500"></div>
-                        <div class="flex justify-between items-start pl-2">
-                            <span class="bg-red-500/20 text-red-400 text-[10px] px-2 py-0.5 rounded font-bold uppercase">Despesa</span>
-                            <h4 class="text-white font-bold text-sm">${exp.desc}</h4>
-                        </div>
-                        <div class="flex justify-between items-end text-xs pt-2 pl-2 border-t border-slate-800 mt-1">
-                            <span class="text-slate-400">Valor gasto</span>
-                            <span class="text-red-400 font-bold text-sm">-${formatBRL(exp.val)}</span>
-                        </div>
-                    </div>
-                `;
-            });
-
-            dayProlabore.forEach(pro => {
-                html += `
-                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 flex flex-col gap-2 relative overflow-hidden">
-                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-blue-400"></div>
-                        <div class="flex justify-between items-start pl-2">
-                            <span class="bg-blue-500/20 text-blue-300 text-[10px] px-2 py-0.5 rounded font-bold uppercase">Pró-Labore</span>
-                            <h4 class="text-white font-bold text-sm">${pro.desc}</h4>
-                        </div>
-                        <div class="flex justify-between items-end text-xs pt-2 pl-2 border-t border-slate-800 mt-1">
-                            <span class="text-slate-400">Retirada</span>
-                            <span class="text-blue-400 font-bold text-sm">-${formatBRL(pro.val)}</span>
-                        </div>
-                    </div>
-                `;
-            });
-
-            document.getElementById('modalBody').innerHTML = html;
-            document.getElementById('appModal').classList.remove('hidden');
-        }
-
-        function getCategoryName(name) {
-            const n = name.toLowerCase();
-            if (n.includes('iphone')) return 'iPhone';
-            if (n.includes('microondas') || n.includes('micro-ondas') || n.includes('micro ondas')) return 'Micro-ondas';
-            if (n.includes('ipad')) return 'iPad';
-            if (n.includes('apple watch')) return 'Apple Watch';
-            if (n.includes('macbook') || n.includes('mac book')) return 'MacBook';
-            if (n.includes('samsung') || n.includes('galaxy')) return 'Samsung';
-            if (n.includes('motorola') || n.includes('moto ')) return 'Motorola';
-            if (n.includes('xiaomi') || n.includes('redmi') || n.includes('poco')) return 'Xiaomi';
-            if (n.includes('tv ') || n.includes('televisao') || n.includes('televisão')) return 'Televisores';
-            if (n.includes('notebook') || n.includes('laptop')) return 'Notebooks';
-            let firstWord = name.trim().split(' ')[0];
-            return firstWord.charAt(0).toUpperCase() + firstWord.slice(1).toLowerCase();
-        }
-
-        window.openCategoryDetails = function(categoryName) {
-            const monthFilter = document.getElementById('globalMonthFilter').value;
-            const soldProducts = sales.filter(s => s.status === 'vendido' && getCategoryName(s.name) === categoryName && (!monthFilter || s.saleDate.startsWith(monthFilter) || s.installments.some(i => i.isPaid && i.dueDate.startsWith(monthFilter))));
-            soldProducts.sort((a,b) => new Date(b.saleDate) - new Date(a.saleDate));
-
-            document.getElementById('modalTitle').innerHTML = `<i class="fa-solid fa-list-ul mr-2 text-blue-400"></i>Vendas: ${categoryName}`;
-
-            let html = '<div class="space-y-3">';
-            soldProducts.forEach(sale => {
-                let cost = (sale.costAcq || 0) + (sale.costVar || 0) + (sale.costTravel || 0);
-                let profit = (sale.salePrice || 0) - cost;
-                html += `
-                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 flex flex-col gap-2 relative overflow-hidden">
-                        <div class="absolute left-0 top-0 bottom-0 w-1 ${profit >= 0 ? 'bg-emerald-500' : 'bg-red-500'}"></div>
-                        <div class="flex justify-between items-start pl-2">
-                            <h4 class="text-white font-bold text-sm">${sale.name}</h4>
-                            <span class="text-xs text-slate-400 bg-slate-800 px-2 py-1 rounded">Venda: ${formatDataBR(sale.saleDate)}</span>
-                        </div>
-                        <div class="flex justify-between items-end text-xs pt-1 pl-2">
-                            <div>Custo: ${formatBRL(cost)} | Venda Total: ${formatBRL(sale.salePrice)}</div>
-                            <div class="text-right"><span class="${profit >= 0 ? 'text-emerald-400' : 'text-red-400'} font-bold text-sm">Lucro: ${formatBRL(profit)}</span></div>
-                        </div>
-                    </div>
-                `;
-            });
-            html += '</div>';
-            document.getElementById('modalBody').innerHTML = html;
-            document.getElementById('appModal').classList.remove('hidden');
-        };
-
-        function renderRankingTab() {
-            const monthFilter = document.getElementById('globalMonthFilter').value;
-            const soldProducts = sales.filter(s => s.status === 'vendido');
-            const productCounts = {};
-
-            soldProducts.forEach(s => {
-                let categoryName = getCategoryName(s.name);
-                let cost = (s.costAcq || 0) + (s.costVar || 0) + (s.costTravel || 0);
-                let profit = (s.salePrice || 0) - cost;
-                
-                let mesRev = 0;
-                if (s.paymentType === 'avista') {
-                    if (!monthFilter || s.saleDate.startsWith(monthFilter)) mesRev = s.salePrice;
-                } else {
-                    if (!monthFilter || s.saleDate.startsWith(monthFilter)) mesRev += (s.downPayment || 0);
-                    s.installments.forEach(inst => {
-                        if (inst.isPaid && (!monthFilter || inst.dueDate.startsWith(monthFilter))) {
-                            mesRev += inst.amount;
-                        }
-                    });
-                }
-
-                if (mesRev > 0) {
-                    if (!productCounts[categoryName]) { productCounts[categoryName] = { name: categoryName, qty: 0, revenue: 0, profit: 0 }; }
-                    productCounts[categoryName].qty += 1;
-                    productCounts[categoryName].revenue += mesRev;
-                    productCounts[categoryName].profit += profit;
-                }
-            });
-
-            const rankedArray = Object.values(productCounts).sort((a, b) => {
-                if (b.profit !== a.profit) return b.profit - a.profit; return b.qty - a.qty;
-            });
-
-            const tbody = document.getElementById('rankingTableBody');
-            tbody.innerHTML = '';
-            
-            if (rankedArray.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="px-5 py-8 text-center text-slate-500">Nenhum recebimento registrado neste mês para formar o ranking.</td></tr>';
-                return;
-            }
-
-            rankedArray.forEach((item, index) => {
-                let posColor = "text-slate-400", icon = "";
-                if (index === 0) { posColor = "text-yellow-400 font-bold"; icon = '<i class="fa-solid fa-trophy mr-2"></i>'; } 
-                else if (index === 1) { posColor = "text-slate-300 font-bold"; icon = '<i class="fa-solid fa-medal mr-2"></i>'; } 
-                else if (index === 2) { posColor = "text-amber-600 font-bold"; icon = '<i class="fa-solid fa-medal mr-2"></i>'; }
-
-                tbody.innerHTML += `
-                    <tr onclick="openCategoryDetails('${item.name}')" class="cursor-pointer group hover:bg-blue-900/20 transition border-b border-slate-700/50 last:border-0 relative">
-                        <td class="px-5 py-4 ${posColor}">${icon}${index + 1}º</td>
-                        <td class="px-5 py-4 font-semibold text-white group-hover:text-blue-400 transition">${item.name}</td>
-                        <td class="px-5 py-4 text-center"><span class="bg-blue-500/20 text-blue-400 px-2.5 py-1 rounded font-bold">${item.qty} un</span></td>
-                        <td class="px-5 py-4 text-right text-slate-400">${formatBRL(item.revenue)}</td>
-                        <td class="px-5 py-4 text-right text-emerald-400 font-bold flex justify-end items-center gap-3">
-                            ${formatBRL(item.profit)}<i class="fa-solid fa-chevron-right text-slate-600 group-hover:text-blue-400 text-xs"></i>
-                        </td>
-                    </tr>
-                `;
-            });
-        }
-
-        function renderProductsGrid() {
-            const grid = document.getElementById('historyGrid');
-            grid.innerHTML = '';
-            const search = document.getElementById('searchInput').value.toLowerCase();
-            const monthFilter = document.getElementById('globalMonthFilter').value;
-
-            let filtered = sales.filter(s => {
-                const matchesSearch = s.name.toLowerCase().includes(search) || s.custName.toLowerCase().includes(search);
-                if (!matchesSearch) return false;
-
-                if (s.status === 'estoque') return true;
-                if (s.status === 'vendido') {
-                    if (!monthFilter) return true;
-                    return s.saleDate && s.saleDate.startsWith(monthFilter);
-                }
-                return false;
-            });
-
-            filtered.sort((a, b) => {
-                if (a.status === 'estoque' && b.status !== 'estoque') return -1;
-                if (a.status !== 'estoque' && b.status === 'estoque') return 1;
-                return 0;
-            });
-
-            if (filtered.length === 0) {
-                grid.innerHTML = '<p class="text-slate-500 text-center py-8 text-sm">Nenhum item em estoque ou vendido neste mês.</p>';
-                return;
-            }
-
-            filtered.forEach(sale => {
-                const isSold = sale.status === 'vendido';
-                const cost = (sale.costAcq || 0) + (sale.costVar || 0) + (sale.costTravel || 0);
-                let payStatus = '';
-                
-                if(isSold) {
-                    if(sale.paymentType === 'parcelado') {
-                        const paidCount = sale.installments.filter(i => i.isPaid).length;
-                        payStatus = `<span class="text-[10px] text-blue-400 block mt-1">Parcelas: ${paidCount}/${sale.installments.length} Pagas</span>`;
-                    } else { 
-                        payStatus = `<span class="text-[10px] text-emerald-400 block mt-1">À Vista (Pago)</span>`; 
-                    }
-                }
-
-                let btnWhatsApp = '';
-                if(sale.custPhone && sale.custPhone.trim() !== '') {
-                    const foneLimpo = sale.custPhone.replace(/\D/g, ''); 
-                    const custName = sale.custName && sale.custName.trim() !== '' ? sale.custName.trim() : '';
-                    const greeting = custName ? `Olá ${custName},` : 'Olá!';
-                    const msg = `${greeting} tudo bem? Aqui é da Solid Tec. Estou entrando em contato referente ao produto: ${sale.name}.`;
-                    btnWhatsApp = `<a href="https://wa.me/55${foneLimpo}?text=${encodeURIComponent(msg)}" target="_blank" class="text-emerald-500 hover:text-emerald-400 text-lg transition" title="Falar no WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>`;
-                }
-
-                grid.innerHTML += `
-                    <div draggable="true" ondragstart="drag(event, ${sale.id})" ondragover="allowDrop(event)" ondrop="drop(event, ${sale.id})" ondragend="dragEnd(event)" class="bg-slate-800/80 rounded-xl p-3 flex gap-3 border border-slate-700 hover:border-slate-500 transition relative items-center">
-                        <div class="cursor-grab text-slate-600 hover:text-slate-400 pr-1 flex items-center justify-center text-lg" title="Arraste para reordenar"><i class="fa-solid fa-grip-vertical"></i></div>
-                        <div onclick="openItemManager(${sale.id})" class="cursor-pointer w-16 h-16 bg-slate-900 rounded-lg flex-shrink-0 flex items-center justify-center border border-slate-700">
-                            ${sale.photo ? `<img src="${sale.photo}" class="w-full h-full object-cover rounded-lg">` : `<i class="fa-solid fa-mobile-screen text-slate-700"></i>`}
-                        </div>
-                        <div class="flex-1 py-1 flex flex-col justify-between">
-                            <div class="flex justify-between items-start">
-                                <h3 onclick="openItemManager(${sale.id})" class="font-bold text-sm text-white cursor-pointer hover:text-blue-400">${sale.name}</h3>
-                                <div class="flex items-center gap-4">
-                                    ${btnWhatsApp}
-                                    <button onclick="deleteSale(${sale.id})" class="text-slate-600 hover:text-red-500 text-sm transition"><i class="fa-solid fa-trash-can"></i></button>
-                                </div>
-                            </div>
-                            <div class="mt-1">
-                                <span onclick="openItemManager(${sale.id})" class="px-2 py-0.5 rounded text-[10px] font-bold cursor-pointer transition ${isSold ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}">${isSold ? '✅ Vendido' : '📦 Estoque'}</span>
-                                ${payStatus}
-                            </div>
-                            <div class="flex justify-between items-end mt-2 text-[11px] text-slate-400">
-                                <div>Custo: ${formatBRL(cost)}</div>
-                                ${isSold ? `<div>Total: <span class="text-white font-bold">${formatBRL(sale.salePrice)}</span></div>` : ''}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        function renderServicesGrid() {
-            const grid = document.getElementById('servicesGrid');
-            grid.innerHTML = '';
-            services.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(srv => {
-                let payStatus = srv.paymentType === 'parcelado' ? `<span class="text-[10px] text-blue-400 ml-2">Parcelado (${srv.installments.filter(i=>i.isPaid).length}/${srv.installments.length} Pagas)</span>` : `<span class="text-[10px] text-emerald-400 ml-2">À Vista</span>`;
-                let btnWhatsApp = '';
-                if(srv.phone && srv.phone.trim() !== '') {
-                    const foneLimpo = srv.phone.replace(/\D/g, ''); 
-                    const clientName = srv.client && srv.client.trim() !== '' ? srv.client.trim() : '';
-                    const greeting = clientName ? `Olá ${clientName},` : 'Olá!';
-                    const msg = `${greeting} tudo bem? Aqui é da Solid Tec. Estou entrando em contato referente ao serviço: ${srv.desc}.`;
-                    btnWhatsApp = `<a href="https://wa.me/55${foneLimpo}?text=${encodeURIComponent(msg)}" target="_blank" class="text-emerald-500 hover:text-emerald-400 transition" title="Falar no WhatsApp"><i class="fa-brands fa-whatsapp text-lg"></i></a>`;
-                }
-
-                grid.innerHTML += `
-                    <div class="bg-slate-800 rounded-xl p-3 flex flex-col border border-slate-700 hover:border-slate-500 transition">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="font-bold text-sm text-white">${srv.desc} <span class="text-xs text-slate-500 font-normal">(${formatDataBR(srv.date)})</span></h3>
-                            <div class="flex items-center gap-4 text-sm">
-                                ${btnWhatsApp}
-                                <button onclick="openServiceManager(${srv.id})" class="text-blue-400 hover:text-white" title="Ver Parcelas"><i class="fa-solid fa-file-invoice-dollar"></i></button>
-                                <button onclick="deleteService(${srv.id})" class="text-slate-600 hover:text-red-500"><i class="fa-solid fa-trash-can"></i></button>
-                            </div>
-                        </div>
-                        <p class="text-xs text-slate-400 mb-2">Cliente: <span class="text-slate-300">${srv.client || 'N/A'}</span></p>
-                        <div class="flex justify-between items-center text-xs">
-                            <span class="text-slate-400">Custo: ${formatBRL(srv.costTravel + srv.costMaterial)}</span>
-                            <span class="text-white font-bold">Total Cobrado: <span class="text-emerald-400">${formatBRL(srv.price)}</span> ${payStatus}</span>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        function renderExpensesGrid() {
-            const grid = document.getElementById('expenseGrid');
-            grid.innerHTML = '';
-            expenses.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(exp => {
-                grid.innerHTML += `<div class="bg-slate-800 rounded-lg p-3 flex justify-between items-center border border-slate-700"><div><p class="font-bold text-sm text-white">${exp.desc}</p><p class="text-xs text-slate-400">${formatDataBR(exp.date)}</p></div><div class="flex items-center gap-4"><span class="text-red-400 font-bold">${formatBRL(exp.val)}</span><button onclick="deleteExpense(${exp.id})" class="text-slate-500 hover:text-red-500"><i class="fa-solid fa-trash-can"></i></button></div></div>`;
-            });
-        }
-
-        function renderProlaboreGrid() {
-            const grid = document.getElementById('prolaboreGrid');
-            grid.innerHTML = '';
-            prolabore.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(pro => {
-                grid.innerHTML += `<div class="bg-slate-800 rounded-lg p-3 flex justify-between items-center border border-slate-700"><div><p class="font-bold text-sm text-white">${pro.desc}</p><p class="text-xs text-slate-400">${formatDataBR(pro.date)}</p></div><div class="flex items-center gap-4"><span class="text-blue-400 font-bold">${formatBRL(pro.val)}</span><button onclick="deleteProlabore(${pro.id})" class="text-slate-500 hover:text-red-500"><i class="fa-solid fa-trash-can"></i></button></div></div>`;
-            });
-        }
-
-        window.exportBackupJSON = function() {
-            const data = { sales, expenses, services, prolabore };
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `backup_solid_tec_${new Date().toISOString().split('T')[0]}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-        };
-
-        window.importBackupJSON = function(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    if (data.sales || data.expenses || data.services || data.prolabore) {
-                        sales = data.sales || [];
-                        expenses = data.expenses || [];
-                        services = data.services || [];
-                        prolabore = data.prolabore || [];
-                        saveToLocal();
-                        refreshMonthlyData();
-                        renderProductsGrid();
-                        renderServicesGrid();
-                        renderExpensesGrid();
-                        renderProlaboreGrid();
-                        alert('Backup restaurado com sucesso!');
-                    } else {
-                        alert('Arquivo de backup inválido.');
-                    }
-                } catch (err) { alert('Erro ao ler o arquivo de backup.'); }
-            };
-            reader.readAsText(file);
-        };
-
-        function updateDashboard() {
-            const monthFilter = document.getElementById('globalMonthFilter').value;
-            
-            let rev = 0, cogs = 0, opCosts = 0, estoqueTotal = 0;
-            let dailyMetrics = {};
-            
-            sales.forEach(sale => {
-                const totalCost = (sale.costAcq || 0) + (sale.costVar || 0) + (sale.costTravel || 0);
-                if (sale.status === 'estoque') {
-                    estoqueTotal += totalCost;
-                } else if (sale.status === 'vendido') {
-                    // Cálculo proporcional dos custos de acordo com o regime de caixa (recebimentos)
-                    if (sale.paymentType === 'avista') {
-                        if (!monthFilter || sale.saleDate.startsWith(monthFilter)) {
-                            rev += sale.salePrice;
-                            cogs += totalCost;
-                            let day = sale.saleDate.split('-')[2] || '01';
-                            if(!dailyMetrics[day]) dailyMetrics[day] = { rev: 0, profit: 0 };
-                            dailyMetrics[day].rev += sale.salePrice;
-                            dailyMetrics[day].profit += (sale.salePrice - totalCost);
-                        }
-                    } else {
-                        // Venda Parcelada / Com Entrada
-                        let totalValue = sale.salePrice || 1;
-                        
-                        // Entrada
-                        if (sale.downPayment > 0) {
-                            let ratio = sale.downPayment / totalValue;
-                            let partCost = totalCost * ratio;
-                            if (!monthFilter || sale.saleDate.startsWith(monthFilter)) {
-                                rev += sale.downPayment;
-                                cogs += partCost;
-                                let day = sale.saleDate.split('-')[2] || '01';
-                                if(!dailyMetrics[day]) dailyMetrics[day] = { rev: 0, profit: 0 };
-                                dailyMetrics[day].rev += sale.downPayment;
-                                dailyMetrics[day].profit += (sale.downPayment - partCost);
-                            }
-                        }
-
-                        // Parcelas
-                        sale.installments.forEach(inst => {
-                            if (inst.isPaid) {
-                                let ratio = inst.amount / totalValue;
-                                let partCost = totalCost * ratio;
-                                if (!monthFilter || inst.dueDate.startsWith(monthFilter)) {
-                                    rev += inst.amount;
-                                    cogs += partCost;
-                                    let day = inst.dueDate.split('-')[2] || '01';
-                                    if(!dailyMetrics[day]) dailyMetrics[day] = { rev: 0, profit: 0 };
-                                    dailyMetrics[day].rev += inst.amount;
-                                    dailyMetrics[day].profit += (inst.amount - partCost);
-                                }
-                            }
-                        });
-                    }
-                }
-            });
-
-            services.forEach(srv => {
-                const totalCost = srv.costTravel + srv.costMaterial;
-                if (srv.paymentType === 'avista') {
-                    if (!monthFilter || srv.date.startsWith(monthFilter)) {
-                        rev += srv.price;
-                        cogs += totalCost;
-                        let day = srv.date.split('-')[2] || '01';
-                        if(!dailyMetrics[day]) dailyMetrics[day] = { rev: 0, profit: 0 };
-                        dailyMetrics[day].rev += srv.price;
-                        dailyMetrics[day].profit += (srv.price - totalCost);
-                    }
-                } else {
-                    let totalValue = srv.price || 1;
-                    if (srv.downPayment > 0) {
-                        let ratio = srv.downPayment / totalValue;
-                        let partCost = totalCost * ratio;
-                        if (!monthFilter || srv.date.startsWith(monthFilter)) {
-                            rev += srv.downPayment;
-                            cogs += partCost;
-                            let day = srv.date.split('-')[2] || '01';
-                            if(!dailyMetrics[day]) dailyMetrics[day] = { rev: 0, profit: 0 };
-                            dailyMetrics[day].rev += srv.downPayment;
-                            dailyMetrics[day].profit += (srv.downPayment - partCost);
-                        }
-                    }
-                    srv.installments.forEach(inst => {
-                        if (inst.isPaid) {
-                            let ratio = inst.amount / totalValue;
-                            let partCost = totalCost * ratio;
-                            if (!monthFilter || inst.dueDate.startsWith(monthFilter)) {
-                                rev += inst.amount;
-                                cogs += partCost;
-                                let day = inst.dueDate.split('-')[2] || '01';
-                                if(!dailyMetrics[day]) dailyMetrics[day] = { rev: 0, profit: 0 };
-                                dailyMetrics[day].rev += inst.amount;
-                                dailyMetrics[day].profit += (inst.amount - partCost);
-                            }
-                        }
-                    });
-                }
-            });
-
-            expenses.forEach(e => { 
-                if (!monthFilter || e.date.startsWith(monthFilter)) { 
-                    opCosts += e.val; 
-                    let day = e.date.split('-')[2] || '01';
-                    if(!dailyMetrics[day]) dailyMetrics[day] = { rev: 0, profit: 0 };
-                    dailyMetrics[day].profit -= e.val;
-                }
-            });
-
-            prolabore.forEach(p => { 
-                if (!monthFilter || p.date.startsWith(monthFilter)) { 
-                    opCosts += p.val; 
-                    let day = p.date.split('-')[2] || '01';
-                    if(!dailyMetrics[day]) dailyMetrics[day] = { rev: 0, profit: 0 };
-                    dailyMetrics[day].profit -= p.val;
-                }
-            });
-
-            const netProfit = rev - cogs - opCosts;
-
-            document.getElementById('dashEstoque').innerText = formatBRL(estoqueTotal);
-            document.getElementById('dashRevenue').innerText = formatBRL(rev);
-            document.getElementById('dashProdCosts').innerText = formatBRL(cogs);
-            document.getElementById('dashOpCosts').innerText = formatBRL(opCosts);
-            
-            const profEl = document.getElementById('dashProfit');
-            profEl.innerText = formatBRL(netProfit); 
-            profEl.className = `text-3xl font-bold ${netProfit >= 0 ? 'text-blue-400' : 'text-red-400'}`;
-
-            let chartLabels = [];
-            let chartDataRev = [];
-            let chartDataProfit = [];
-
-            Object.keys(dailyMetrics).sort((a, b) => parseInt(a) - parseInt(b)).forEach(day => {
-                chartLabels.push(`Dia ${day}`);
-                chartDataRev.push(dailyMetrics[day].rev);
-                chartDataProfit.push(dailyMetrics[day].profit);
-            });
-
-            const ctx = document.getElementById('profitChart').getContext('2d');
-            if(chartInstance) chartInstance.destroy();
-            chartInstance = new Chart(ctx, {
-                type: 'bar', 
-                data: { 
-                    labels: chartLabels, 
-                    datasets: [
-                        { label: 'Faturamento (Recebido)', data: chartDataRev, backgroundColor: '#3b82f6', borderRadius: 4 },
-                        { label: 'Lucro Líquido', data: chartDataProfit, backgroundColor: '#10b981', borderRadius: 4 }
-                    ] 
-                },
-                options: { 
-                    responsive: true, 
-                    maintainAspectRatio: false, 
-                    plugins: { 
-                        legend: { labels: { color: '#cbd5e1', font: { family: "'Segoe UI', sans-serif", size: 12 } } },
-                        tooltip: { callbacks: { label: (c) => c.dataset.label + ': ' + formatBRL(c.parsed.y) } }
-                    }, 
-                    scales: { y: { grid: { color: '#334155' } }, x: { grid: { display: false } } },
-                    onClick: (e, elements) => {
-                        if (elements.length > 0) {
-                            const dataIndex = elements[0].index;
-                            const label = chartInstance.data.labels[dataIndex];
-                            const day = label.replace('Dia ', '').padStart(2, '0');
-                            const filter = document.getElementById('globalMonthFilter').value;
-                            if (filter) openDayDetails(`${filter}-${day}`);
-                        }
-                    },
-                    onHover: (e, elements) => { e.native.target.style.cursor = elements.length ? 'pointer' : 'default'; }
-                }
-            });
-        }
-
-        updateBillingNotification();
-        switchTab('dashboard');
-    </script>
-</body>
-</html>
+                            <label class="block text-xs font-semibold text-
