@@ -4,30 +4,65 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Solid Tec | Sistema de Gestão</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
+        :root {
+            --bg-canvas: #050907;
+            --bg-surface: rgba(11, 19, 15, 0.92);
+            --border-subtle: rgba(16, 185, 129, 0.16);
+        }
         html, body {
-            background-color: #0f172a;
-            color: #e2e8f0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-canvas);
+            background-image:
+                radial-gradient(circle at 50% -10%, rgba(16, 185, 129, 0.16), transparent 45%),
+                radial-gradient(circle at 85% 25%, rgba(5, 150, 105, 0.08), transparent 40%);
+            color: #ecfdf5;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
             overflow-x: hidden;
             max-width: 100%;
             -webkit-tap-highlight-color: transparent;
         }
         .glass-panel {
-            background: rgba(30, 41, 59, 0.82);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: var(--bg-surface);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid var(--border-subtle);
+            box-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.75);
             max-width: 100%;
         }
+        .kpi-card {
+            background: linear-gradient(180deg, rgba(16, 30, 23, 0.85) 0%, rgba(8, 14, 11, 0.96) 100%);
+            border: 1px solid rgba(16, 185, 129, 0.16);
+            box-shadow: 0 10px 26px -10px rgba(0, 0, 0, 0.65);
+        }
+        .hero-revenue-card {
+            background:
+                radial-gradient(circle at 85% 15%, rgba(16, 185, 129, 0.24), transparent 55%),
+                linear-gradient(160deg, #0d1f16 0%, #070e0b 100%);
+            border: 1px solid rgba(16, 185, 129, 0.35);
+            box-shadow: 0 16px 40px -14px rgba(16, 185, 129, 0.28);
+        }
+        .center-fab {
+            background: radial-gradient(circle at 30% 25%, #6ee7b7 0%, #10b981 48%, #059669 100%);
+            box-shadow: 0 0 24px rgba(16, 185, 129, 0.55), 0 8px 18px rgba(0, 0, 0, 0.7);
+        }
+        .center-fab-active {
+            box-shadow: 0 0 32px rgba(52, 211, 153, 0.85), 0 0 0 4px rgba(16, 185, 129, 0.22), 0 10px 22px rgba(0, 0, 0, 0.8);
+            transform: translateY(-2px) scale(1.04);
+        }
+        .tabular-nums {
+            font-variant-numeric: tabular-nums;
+        }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+        ::-webkit-scrollbar-track { background: #050907; }
+        ::-webkit-scrollbar-thumb { background: #143325; border-radius: 999px; }
+        ::-webkit-scrollbar-thumb:hover { background: #10b981; }
 
         @media print {
             body { background: white !important; color: black !important; }
@@ -36,197 +71,269 @@
         }
         .print-only { display: none; }
 
-        input, select, button {
-            max-width: 100%;
+        input, select, button { max-width: 100%; }
+        input[type="date"], input[type="month"] { min-width: 0; }
+        input[type="date"]::-webkit-calendar-picker-indicator,
+        input[type="month"]::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+            opacity: 0.75;
+            transition: 0.2s;
         }
-        input[type="date"], input[type="month"] {
-            min-width: 0;
+        input[type="date"]::-webkit-calendar-picker-indicator:hover,
+        input[type="month"]::-webkit-calendar-picker-indicator:hover {
+            opacity: 1;
         }
-        input[type="date"]::-webkit-calendar-picker-indicator { cursor: pointer; opacity: 0.7; transition: 0.2s; }
-        input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
     </style>
 </head>
-<body class="min-h-screen w-full">
+<body class="min-h-screen w-full pb-28">
 
-    <div class="no-print p-3 sm:p-5 md:p-6 lg:p-8 max-w-7xl mx-auto">
-        <!-- Navbar e Abas -->
-        <header class="flex flex-col xl:flex-row justify-between items-stretch xl:items-center mb-5 sm:mb-8 glass-panel rounded-2xl p-3.5 sm:p-4 shadow-lg gap-3.5 sm:gap-4">
-            <div class="flex items-center justify-between gap-2">
+    <div class="no-print p-3 sm:p-5 md:p-6 max-w-6xl mx-auto">
+        <!-- HEADER SUPERIOR COMPACTO -->
+        <header class="glass-panel rounded-2xl p-3 sm:p-4 mb-4 sm:mb-6 space-y-3">
+            <div class="flex items-center justify-between gap-2.5">
                 <div class="flex items-center gap-3 min-w-0">
-                    <img src="image_12aada.png" alt="Solid Tec" onerror="this.style.display='none'" class="h-10 sm:h-12 w-auto object-contain shrink-0">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-400/30 flex items-center justify-center shrink-0 overflow-hidden">
+                        <img src="image_12aada.png" alt="Solid Tec" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');" class="h-8 w-auto object-contain">
+                        <i class="fa-solid fa-microchip text-emerald-400 text-lg hidden"></i>
+                    </div>
                     <div class="min-w-0">
-                        <h1 class="text-xl sm:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400 truncate">Solid Tec</h1>
-                        <p class="text-[10px] sm:text-xs text-slate-400 uppercase tracking-wider font-semibold truncate">Sistema de Gestão Integrada</p>
+                        <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-emerald-400 to-green-500 leading-tight">Solid Tec</h1>
+                        <p class="text-[10px] sm:text-xs text-emerald-200/60 uppercase tracking-widest font-semibold">Gestão Integrada</p>
                     </div>
                 </div>
 
-                <!-- Status Nuvem + Sino no Mobile -->
-                <div class="flex xl:hidden items-center gap-2 shrink-0">
-                    <button type="button" onclick="pullFromCloud(true)" id="syncBadgeMobile" class="px-2.5 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-[11px] font-bold text-slate-300 flex items-center gap-1.5 touch-manipulation" title="Toque para sincronizar">
-                        <i class="fa-solid fa-cloud text-blue-400"></i>
+                <div class="flex items-center gap-2 shrink-0">
+                    <button type="button" onclick="pullFromCloud(true)" id="syncBadge" class="px-3 py-2 rounded-xl bg-black/70 border border-emerald-500/25 hover:border-emerald-400/60 text-[11px] sm:text-xs font-semibold text-emerald-100 flex items-center gap-1.5 transition cursor-pointer touch-manipulation" title="Toque para sincronizar">
+                        <i class="fa-solid fa-cloud text-emerald-400"></i>
                         <span>Nuvem</span>
                     </button>
-                    <button type="button" id="btnNotifMobile" onclick="openBillingCenter()" class="hidden relative p-2.5 bg-slate-900 rounded-xl border border-red-500/50 text-slate-300 hover:text-white transition shadow-lg cursor-pointer touch-manipulation">
-                        <i class="fa-solid fa-bell text-red-400 text-base animate-pulse"></i>
-                        <span id="notifCountMobile" class="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow">0</span>
+
+                    <button type="button" id="btnNotif" onclick="openBillingCenter()" class="hidden relative w-10 h-10 rounded-xl bg-red-950/60 border border-red-500/40 text-red-400 hover:text-white hover:bg-red-900/60 flex items-center justify-center transition shadow-lg cursor-pointer touch-manipulation" title="Cobranças pendentes">
+                        <i class="fa-solid fa-bell text-sm sm:text-base animate-pulse"></i>
+                        <span id="notifCount" class="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] font-extrabold min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center shadow ring-2 ring-[#050907]">0</span>
                     </button>
                 </div>
             </div>
 
-            <!-- Navegação: 4 colunas no mobile e linha única no desktop -->
-            <nav aria-label="Menu principal" class="grid grid-cols-4 sm:flex sm:flex-wrap gap-1.5 sm:gap-2 bg-slate-800/60 p-1.5 rounded-xl border border-slate-700 justify-center flex-1 w-full xl:w-auto">
-                <button type="button" onclick="switchTab('dashboard')" id="tab-dashboard" class="px-2 sm:px-3.5 py-2 text-[11px] sm:text-sm font-bold rounded-lg bg-blue-500/20 text-blue-400 transition tab-btn touch-manipulation cursor-pointer flex items-center justify-center gap-1.5">
-                    <i class="fa-solid fa-chart-pie"></i><span>Resumo</span>
+            <!-- Seletor de Mês -->
+            <div class="flex items-center justify-between gap-2 bg-black/60 px-2.5 py-1.5 rounded-xl border border-emerald-500/20">
+                <button type="button" onclick="changeMonth(-1)" class="w-8 h-8 rounded-lg bg-emerald-950/60 hover:bg-emerald-900/60 text-emerald-300 hover:text-white flex items-center justify-center transition touch-manipulation shrink-0" title="Mês anterior">
+                    <i class="fa-solid fa-chevron-left text-xs"></i>
                 </button>
-                <button type="button" onclick="switchTab('products')" id="tab-products" class="px-2 sm:px-3.5 py-2 text-[11px] sm:text-sm font-bold rounded-lg text-slate-400 hover:text-white hover:bg-slate-700 transition tab-btn touch-manipulation cursor-pointer flex items-center justify-center gap-1.5">
-                    <i class="fa-solid fa-box-open"></i><span>Produtos</span>
-                </button>
-                <button type="button" onclick="switchTab('services')" id="tab-services" class="px-2 sm:px-3.5 py-2 text-[11px] sm:text-sm font-bold rounded-lg text-slate-400 hover:text-white hover:bg-slate-700 transition tab-btn touch-manipulation cursor-pointer flex items-center justify-center gap-1.5">
-                    <i class="fa-solid fa-wrench"></i><span>Serviços</span>
-                </button>
-                <button type="button" onclick="switchTab('ranking')" id="tab-ranking" class="px-2 sm:px-3.5 py-2 text-[11px] sm:text-sm font-bold rounded-lg text-slate-400 hover:text-white hover:bg-slate-700 transition tab-btn touch-manipulation cursor-pointer flex items-center justify-center gap-1.5">
-                    <i class="fa-solid fa-trophy"></i><span>Ranking</span>
-                </button>
-                <button type="button" onclick="switchTab('expenses')" id="tab-expenses" class="px-2 sm:px-3.5 py-2 text-[11px] sm:text-sm font-bold rounded-lg text-slate-400 hover:text-white hover:bg-slate-700 transition tab-btn touch-manipulation cursor-pointer flex items-center justify-center gap-1.5">
-                    <i class="fa-solid fa-money-bill-transfer"></i><span>Despesas</span>
-                </button>
-                <button type="button" onclick="switchTab('prolabore')" id="tab-prolabore" class="px-2 sm:px-3.5 py-2 text-[11px] sm:text-sm font-bold rounded-lg text-slate-400 hover:text-white hover:bg-slate-700 transition tab-btn touch-manipulation cursor-pointer flex items-center justify-center gap-1.5">
-                    <i class="fa-solid fa-user-tie"></i><span>Pró-Labore</span>
-                </button>
-                <button type="button" onclick="switchTab('settings')" id="tab-settings" class="col-span-2 sm:col-span-1 px-2 sm:px-3.5 py-2 text-[11px] sm:text-sm font-bold rounded-lg text-slate-400 hover:text-white hover:bg-slate-700 transition tab-btn touch-manipulation cursor-pointer flex items-center justify-center gap-1.5">
-                    <i class="fa-solid fa-gear"></i><span>Backup</span>
-                </button>
-            </nav>
-
-            <!-- Status Nuvem (Desktop) + Sino + Filtro de Mês -->
-            <div class="flex items-center gap-2.5 w-full xl:w-auto">
-                <button type="button" onclick="pullFromCloud(true)" id="syncBadgeDesktop" class="hidden xl:inline-flex items-center gap-2 px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs font-bold text-slate-300 hover:border-blue-500/50 transition cursor-pointer shrink-0" title="Clique para sincronizar agora">
-                    <i class="fa-solid fa-cloud text-blue-400"></i>
-                    <span>Nuvem</span>
-                </button>
-
-                <button type="button" id="btnNotif" onclick="openBillingCenter()" class="hidden xl:inline-flex relative p-2.5 bg-slate-900 rounded-xl border border-red-500/50 text-slate-300 hover:text-white transition shadow-lg cursor-pointer shrink-0">
-                    <i class="fa-solid fa-bell text-red-400 text-lg animate-pulse"></i>
-                    <span id="notifCount" class="absolute -top-2 -right-2 bg-red-600 text-white text-[11px] font-bold px-2 py-0.5 rounded-full shadow">0</span>
-                </button>
-
-                <div class="flex items-center gap-2.5 bg-slate-900 px-3 py-2 rounded-xl border border-slate-700 shadow-inner w-full xl:w-auto min-w-0">
-                    <i class="fa-regular fa-calendar text-blue-400 shrink-0"></i>
-                    <div class="flex flex-col flex-1 min-w-0">
-                        <label for="globalMonthFilter" class="text-[10px] font-bold text-slate-500 uppercase">Fechamento / Mês</label>
-                        <input type="month" id="globalMonthFilter" onchange="refreshMonthlyData()" class="bg-transparent text-white outline-none text-xs sm:text-sm font-bold [color-scheme:dark] cursor-pointer w-full">
-                    </div>
+                <div class="flex flex-col items-center flex-1 min-w-0">
+                    <label for="globalMonthFilter" class="text-[9px] font-bold text-emerald-400/70 uppercase tracking-wider">Período / Mês</label>
+                    <input type="month" id="globalMonthFilter" onchange="refreshMonthlyData()" class="bg-transparent text-white outline-none text-xs sm:text-sm font-bold [color-scheme:dark] cursor-pointer text-center w-full">
                 </div>
+                <button type="button" onclick="changeMonth(1)" class="w-8 h-8 rounded-lg bg-emerald-950/60 hover:bg-emerald-900/60 text-emerald-300 hover:text-white flex items-center justify-center transition touch-manipulation shrink-0" title="Próximo mês">
+                    <i class="fa-solid fa-chevron-right text-xs"></i>
+                </button>
             </div>
         </header>
 
         <!-- AVISO GLOBAL DE STATUS / SINCRONIZAÇÃO -->
-        <div id="storageNotice" class="hidden mb-5 bg-amber-950/80 border border-amber-500/50 text-amber-200 px-4 py-3 rounded-xl text-xs sm:text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div id="storageNotice" class="hidden mb-4 bg-amber-950/80 border border-amber-500/40 text-amber-200 px-4 py-3 rounded-xl text-xs sm:text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <span id="storageNoticeText"></span>
             <button type="button" onclick="document.getElementById('storageNotice').classList.add('hidden')" class="text-amber-300 hover:text-white font-bold text-xs self-end sm:self-auto">Fechar</button>
         </div>
 
-        <!-- ABA 1: DASHBOARD -->
-        <main id="view-dashboard" class="tab-view space-y-4 sm:space-y-6">
-            <div class="bg-gradient-to-r from-slate-800 to-slate-900 border border-slate-700 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center shadow-lg gap-3">
+        <!-- ABA CENTRAL ($): FATURAMENTO EM PARETO & PICOS DIÁRIOS -->
+        <main id="view-faturamento" class="tab-view space-y-4 sm:space-y-5">
+            <!-- Hero Card Faturamento -->
+            <section class="hero-revenue-card rounded-2xl p-4 sm:p-6 relative overflow-hidden">
+                <div class="flex items-start justify-between gap-3">
+                    <div>
+                        <span class="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/15 border border-emerald-400/25 px-2.5 py-1 rounded-full">
+                            <i class="fa-solid fa-dollar-sign"></i> Faturamento do Mês
+                        </span>
+                        <div class="mt-2.5 text-3xl sm:text-4xl font-extrabold text-white tracking-tight tabular-nums" id="fatTotalMonth">R$ 0,00</div>
+                        <p class="text-xs text-emerald-200/70 mt-1" id="fatSubtitle">Análise de Pareto e picos diários de vendas</p>
+                    </div>
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-emerald-500/20 border border-emerald-400/35 flex items-center justify-center text-emerald-300 text-2xl sm:text-3xl font-extrabold shrink-0">
+                        $
+                    </div>
+                </div>
+
+                <!-- Mini Indicadores de Pico -->
+                <div class="grid grid-cols-3 gap-2 sm:gap-3 mt-4 pt-4 border-t border-emerald-500/20">
+                    <div class="bg-black/45 rounded-xl p-2.5 border border-emerald-500/15">
+                        <p class="text-[10px] font-semibold text-emerald-300/70 uppercase">Dia de Pico</p>
+                        <p class="text-xs sm:text-sm font-extrabold text-emerald-400 mt-0.5 tabular-nums truncate" id="fatPeakDay">--</p>
+                    </div>
+                    <div class="bg-black/45 rounded-xl p-2.5 border border-emerald-500/15">
+                        <p class="text-[10px] font-semibold text-emerald-300/70 uppercase">Maior Pico</p>
+                        <p class="text-xs sm:text-sm font-extrabold text-white mt-0.5 tabular-nums truncate" id="fatPeakValue">R$ 0,00</p>
+                    </div>
+                    <div class="bg-black/45 rounded-xl p-2.5 border border-emerald-500/15">
+                        <p class="text-[10px] font-semibold text-emerald-300/70 uppercase">Dias c/ Venda</p>
+                        <p class="text-xs sm:text-sm font-extrabold text-white mt-0.5 tabular-nums" id="fatActiveDays">0 dias</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Gráfico de Pareto do Faturamento Diário -->
+            <section class="glass-panel p-4 sm:p-6 rounded-2xl h-80 sm:h-96 flex flex-col min-w-0">
+                <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                    <div>
+                        <h2 class="text-xs sm:text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-chart-line text-emerald-400"></i>
+                            <span>Curva de Pareto & Picos Diários</span>
+                        </h2>
+                        <p class="text-[11px] text-emerald-200/60 mt-0.5">Toque na barra do dia para ver as vendas</p>
+                    </div>
+                    <div class="flex bg-black/70 p-1 rounded-xl border border-emerald-500/20 text-[11px] font-bold">
+                        <button type="button" id="btnModePareto" onclick="setParetoMode('pareto')" class="px-2.5 py-1 rounded-lg bg-emerald-500 text-black transition cursor-pointer">Pareto</button>
+                        <button type="button" id="btnModeChrono" onclick="setParetoMode('chrono')" class="px-2.5 py-1 rounded-lg text-emerald-200/70 hover:text-white transition cursor-pointer">Por Dia</button>
+                    </div>
+                </div>
+                <div class="flex-1 relative w-full h-full min-h-0 min-w-0">
+                    <canvas id="paretoChart"></canvas>
+                </div>
+            </section>
+
+            <!-- Histórico de Picos de Vendas por Dia -->
+            <section class="glass-panel p-4 sm:p-6 rounded-2xl">
+                <div class="flex items-center justify-between mb-3.5 border-b border-emerald-500/15 pb-3">
+                    <h3 class="text-xs sm:text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-fire text-emerald-400"></i>
+                        <span>Histórico de Picos por Dia</span>
+                    </h3>
+                    <span class="text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">80/20 Vital</span>
+                </div>
+                <div id="paretoPeakList" class="space-y-2.5"></div>
+            </section>
+        </main>
+
+        <!-- ABA RESUMO GERAL -->
+        <main id="view-dashboard" class="tab-view hidden space-y-4 sm:space-y-5">
+            <!-- Card Destaque: Patrimônio em Estoque -->
+            <div class="kpi-card rounded-2xl p-4 sm:p-5 flex items-center justify-between gap-3 relative overflow-hidden">
+                <div class="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-emerald-400 via-green-500 to-transparent"></div>
                 <div class="flex items-center gap-3 sm:gap-4 min-w-0">
-                    <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 text-lg sm:text-xl shrink-0">
+                    <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-emerald-500/15 border border-emerald-400/25 flex items-center justify-center text-emerald-400 text-lg sm:text-xl shrink-0">
                         <i class="fa-solid fa-boxes-stacked"></i>
                     </div>
                     <div class="min-w-0">
-                        <h3 class="text-white font-bold text-base sm:text-lg">Patrimônio em Estoque</h3>
-                        <p class="text-xs text-slate-400">Valor investido em mercadorias não vendidas (não afeta o lucro do mês)</p>
+                        <div class="flex items-center gap-2">
+                            <h3 class="text-white font-bold text-sm sm:text-base">Patrimônio em Estoque</h3>
+                            <span class="hidden sm:inline-block text-[10px] font-semibold bg-emerald-500/15 text-emerald-300 px-2 py-0.5 rounded-full">Ativo imobilizado</span>
+                        </div>
+                        <p class="text-[11px] sm:text-xs text-emerald-200/60 leading-snug mt-0.5">Capital em aparelhos ainda não vendidos</p>
                     </div>
                 </div>
-                <div class="text-2xl sm:text-3xl font-bold text-blue-400" id="dashEstoque">R$ 0,00</div>
+                <div class="text-xl sm:text-3xl font-extrabold text-emerald-400 tabular-nums shrink-0" id="dashEstoque">R$ 0,00</div>
             </div>
 
-            <div class="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-5">
-                <div class="glass-panel p-3.5 sm:p-6 rounded-2xl border-l-4 border-l-emerald-500 relative overflow-hidden">
-                    <div class="hidden sm:block absolute top-4 right-4 text-emerald-500/20 text-4xl xl:text-5xl"><i class="fa-solid fa-money-bill-trend-up"></i></div>
-                    <p class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wide mb-1">Faturamento (Mês)</p>
-                    <p class="text-base sm:text-2xl xl:text-3xl font-bold text-white break-words" id="dashRevenue">R$ 0,00</p>
+            <!-- Grid 2x2 (Mobile) / 4 Colunas (Desktop) -->
+            <div class="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
+                <div class="kpi-card p-3.5 sm:p-5 rounded-2xl relative overflow-hidden">
+                    <div class="absolute inset-x-0 top-0 h-[2px] bg-emerald-400"></div>
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="text-[10px] sm:text-xs font-bold text-emerald-200/70 uppercase tracking-wider">Faturamento</p>
+                        <span class="w-7 h-7 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-trend-up"></i></span>
+                    </div>
+                    <p class="text-base sm:text-2xl font-extrabold text-white tabular-nums break-words" id="dashRevenue">R$ 0,00</p>
                 </div>
-                <div class="glass-panel p-3.5 sm:p-6 rounded-2xl border-l-4 border-l-orange-500 relative overflow-hidden">
-                    <div class="hidden sm:block absolute top-4 right-4 text-orange-500/20 text-4xl xl:text-5xl"><i class="fa-solid fa-box"></i></div>
-                    <p class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wide mb-1">Custo das Vendas</p>
-                    <p class="text-base sm:text-2xl xl:text-3xl font-bold text-white break-words" id="dashProdCosts">R$ 0,00</p>
+
+                <div class="kpi-card p-3.5 sm:p-5 rounded-2xl relative overflow-hidden">
+                    <div class="absolute inset-x-0 top-0 h-[2px] bg-amber-500"></div>
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="text-[10px] sm:text-xs font-bold text-emerald-200/70 uppercase tracking-wider">Custo Vendas</p>
+                        <span class="w-7 h-7 rounded-lg bg-amber-500/15 text-amber-400 flex items-center justify-center text-xs"><i class="fa-solid fa-box"></i></span>
+                    </div>
+                    <p class="text-base sm:text-2xl font-extrabold text-white tabular-nums break-words" id="dashProdCosts">R$ 0,00</p>
                 </div>
-                <div class="glass-panel p-3.5 sm:p-6 rounded-2xl border-l-4 border-l-red-500 relative overflow-hidden">
-                    <div class="hidden sm:block absolute top-4 right-4 text-red-500/20 text-4xl xl:text-5xl"><i class="fa-solid fa-tools"></i></div>
-                    <p class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wide mb-1">Despesas & Pró-Labore</p>
-                    <p class="text-base sm:text-2xl xl:text-3xl font-bold text-white break-words" id="dashOpCosts">R$ 0,00</p>
+
+                <div class="kpi-card p-3.5 sm:p-5 rounded-2xl relative overflow-hidden">
+                    <div class="absolute inset-x-0 top-0 h-[2px] bg-rose-500"></div>
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="text-[10px] sm:text-xs font-bold text-emerald-200/70 uppercase tracking-wider">Despesas & Ret.</p>
+                        <span class="w-7 h-7 rounded-lg bg-rose-500/15 text-rose-400 flex items-center justify-center text-xs"><i class="fa-solid fa-receipt"></i></span>
+                    </div>
+                    <p class="text-base sm:text-2xl font-extrabold text-white tabular-nums break-words" id="dashOpCosts">R$ 0,00</p>
                 </div>
-                <div class="glass-panel p-3.5 sm:p-6 rounded-2xl border-l-4 border-l-blue-500 relative overflow-hidden">
-                    <div class="hidden sm:block absolute top-4 right-4 text-blue-500/20 text-4xl xl:text-5xl"><i class="fa-solid fa-wallet"></i></div>
-                    <p class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wide mb-1">Lucro Líquido (Mês)</p>
-                    <p class="text-base sm:text-2xl xl:text-3xl font-bold break-words" id="dashProfit">R$ 0,00</p>
+
+                <div class="kpi-card p-3.5 sm:p-5 rounded-2xl relative overflow-hidden">
+                    <div class="absolute inset-x-0 top-0 h-[2px] bg-green-400"></div>
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="text-[10px] sm:text-xs font-bold text-emerald-200/70 uppercase tracking-wider">Lucro Líquido</p>
+                        <span class="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-300 flex items-center justify-center text-xs"><i class="fa-solid fa-wallet"></i></span>
+                    </div>
+                    <p class="text-base sm:text-2xl font-extrabold text-emerald-400 tabular-nums break-words" id="dashProfit">R$ 0,00</p>
                 </div>
             </div>
 
+            <!-- Gráfico Diário Faturamento x Lucro -->
             <div class="glass-panel p-4 sm:p-6 rounded-2xl h-72 sm:h-96 flex flex-col min-w-0">
-                <h2 class="text-xs sm:text-sm font-bold text-slate-300 uppercase tracking-wider mb-3 sm:mb-4 flex flex-wrap items-center gap-2">
-                    <span><i class="fa-solid fa-chart-line mr-2 text-blue-400"></i>Faturamento e Lucro Diário</span>
-                    <span class="text-[11px] font-normal text-blue-400 normal-case bg-blue-500/10 px-2 py-0.5 rounded">Toque nas barras para ver os detalhes</span>
-                </h2>
+                <div class="flex flex-wrap items-center justify-between gap-2 mb-3 sm:mb-4">
+                    <h2 class="text-xs sm:text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-chart-column text-emerald-400"></i>
+                        <span>Faturamento e Lucro Diário</span>
+                    </h2>
+                    <span class="text-[11px] font-medium text-emerald-300 bg-emerald-500/10 border border-emerald-500/25 px-2.5 py-1 rounded-full">
+                        Toque nas barras para detalhar
+                    </span>
+                </div>
                 <div class="flex-1 relative w-full h-full min-h-0 min-w-0"><canvas id="profitChart"></canvas></div>
             </div>
         </main>
 
-        <!-- ABA 2: PRODUTOS / ESTOQUE -->
-        <main id="view-products" class="tab-view hidden grid grid-cols-1 xl:grid-cols-12 gap-6 sm:gap-8">
-            <section class="xl:col-span-4 h-fit glass-panel p-4 sm:p-6 rounded-2xl shadow-xl">
-                <h2 class="text-base sm:text-lg font-bold text-white mb-5 border-b border-slate-700 pb-3"><i class="fa-solid fa-box-open text-blue-400 mr-2"></i>Entrada de Aparelho</h2>
+        <!-- ABA PRODUTOS / ESTOQUE -->
+        <main id="view-products" class="tab-view hidden grid grid-cols-1 xl:grid-cols-12 gap-5 sm:gap-7">
+            <section class="xl:col-span-4 h-fit glass-panel p-4 sm:p-6 rounded-2xl">
+                <h2 class="text-base sm:text-lg font-bold text-white mb-4 border-b border-emerald-500/15 pb-3 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center justify-center text-sm"><i class="fa-solid fa-box-open"></i></span>
+                    <span>Entrada de Aparelho</span>
+                </h2>
                 <form id="salesForm" class="space-y-3.5">
-                    <input type="text" id="prodName" required placeholder="Aparelho / Produto" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700">
-                    <input type="text" id="prodSerial" placeholder="IMEI / Número de Série (Opcional)" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700">
+                    <input type="text" id="prodName" required placeholder="Aparelho / Produto" class="w-full bg-black/70 rounded-xl p-2.5 text-sm text-white border border-emerald-500/25 focus:border-emerald-400 outline-none">
+                    <input type="text" id="prodSerial" placeholder="IMEI / Número de Série (Opcional)" class="w-full bg-black/70 rounded-xl p-2.5 text-sm text-white border border-emerald-500/25 focus:border-emerald-400 outline-none">
                     <div>
-                        <label class="block text-[11px] font-semibold text-slate-400 mb-1">Data de Entrada</label>
-                        <input type="date" id="buyDate" required class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700 [color-scheme:dark]">
+                        <label class="block text-[11px] font-semibold text-emerald-200/70 mb-1">Data de Entrada</label>
+                        <input type="date" id="buyDate" required class="w-full bg-black/70 rounded-xl p-2.5 text-sm text-white border border-emerald-500/25 [color-scheme:dark]">
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <div>
-                            <label class="block text-[11px] font-semibold text-slate-400 mb-1">Custo Base (R$)</label>
-                            <input type="number" step="0.01" id="costAcq" required placeholder="0.00" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700">
+                            <label class="block text-[11px] font-semibold text-emerald-200/70 mb-1">Custo Base (R$)</label>
+                            <input type="number" step="0.01" id="costAcq" required placeholder="0.00" class="w-full bg-black/70 rounded-xl p-2.5 text-sm text-white border border-emerald-500/25">
                         </div>
                         <div>
-                            <label class="block text-[11px] font-semibold text-slate-400 mb-1">Peças (R$)</label>
-                            <input type="number" step="0.01" id="costVar" placeholder="0.00" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700">
+                            <label class="block text-[11px] font-semibold text-emerald-200/70 mb-1">Peças (R$)</label>
+                            <input type="number" step="0.01" id="costVar" placeholder="0.00" class="w-full bg-black/70 rounded-xl p-2.5 text-sm text-white border border-emerald-500/25">
                         </div>
                         <div>
-                            <label class="flex justify-between items-center text-[11px] font-semibold text-slate-400 mb-1">
+                            <label class="flex justify-between items-center text-[11px] font-semibold text-emerald-200/70 mb-1">
                                 Frete (R$)
-                                <button type="button" onclick="openCalc('costTravelProd')" class="text-blue-400 hover:text-blue-300 px-1" title="Calcular Frete"><i class="fa-solid fa-calculator"></i></button>
+                                <button type="button" onclick="openCalc('costTravelProd')" class="text-emerald-400 hover:text-emerald-300 px-1" title="Calcular Frete"><i class="fa-solid fa-calculator"></i></button>
                             </label>
-                            <input type="number" step="0.01" id="costTravelProd" placeholder="0.00" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700">
+                            <input type="number" step="0.01" id="costTravelProd" placeholder="0.00" class="w-full bg-black/70 rounded-xl p-2.5 text-sm text-white border border-emerald-500/25">
                         </div>
                     </div>
 
                     <div class="pt-1">
-                        <label class="block text-xs font-semibold text-slate-400 mb-1">Status Inicial</label>
-                        <select id="prodInitialStatus" onchange="toggleNewProdSoldFields(this.value)" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700 outline-none cursor-pointer">
+                        <label class="block text-xs font-semibold text-emerald-200/70 mb-1">Status Inicial</label>
+                        <select id="prodInitialStatus" onchange="toggleNewProdSoldFields(this.value)" class="w-full bg-black/70 rounded-xl p-2.5 text-sm text-white border border-emerald-500/25 outline-none cursor-pointer">
                             <option value="estoque">📦 Colocar no Estoque</option>
                             <option value="vendido">✅ Registrar como Vendido (Saída)</option>
                         </select>
                     </div>
 
-                    <div id="newProdSoldFields" class="hidden space-y-4 pt-4 mt-2 border-t border-slate-700">
+                    <div id="newProdSoldFields" class="hidden space-y-4 pt-4 mt-2 border-t border-emerald-500/15">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div>
                                 <label class="block text-xs font-semibold text-emerald-400 mb-1">Valor Venda (R$)</label>
-                                <input type="number" step="0.01" id="newProdSalePrice" placeholder="0.00" class="w-full bg-emerald-900/20 rounded-lg p-2.5 text-sm text-emerald-400 border border-emerald-700">
+                                <input type="number" step="0.01" id="newProdSalePrice" placeholder="0.00" class="w-full bg-emerald-950/40 rounded-xl p-2.5 text-sm text-emerald-400 border border-emerald-500/40">
                             </div>
                             <div>
-                                <label class="block text-xs font-semibold text-slate-400 mb-1">Data da Venda</label>
-                                <input type="date" id="newProdSaleDate" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700 [color-scheme:dark]">
+                                <label class="block text-xs font-semibold text-emerald-200/70 mb-1">Data da Venda</label>
+                                <input type="date" id="newProdSaleDate" class="w-full bg-black/70 rounded-xl p-2.5 text-sm text-white border border-emerald-500/25 [color-scheme:dark]">
                             </div>
                         </div>
 
                         <div class="space-y-3">
                             <div>
-                                <label class="block text-xs font-semibold text-slate-400 mb-1">Pagamento</label>
-                                <select id="newProdPaymentType" onchange="toggleNewProdPayment(this.value)" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700 cursor-pointer">
+                                <label class="block text-xs font-semibold text-emerald-200/70 mb-1">Pagamento</label>
+                                <select id="newProdPaymentType" onchange="toggleNewProdPayment(this.value)" class="w-full bg-black/70 rounded-xl p-2.5 text-sm text-white border border-emerald-500/25 cursor-pointer">
                                     <option value="avista">À Vista</option>
                                     <option value="parcelado">Parcelado / Com Entrada</option>
                                 </select>
@@ -235,53 +342,196 @@
                             <div id="newProdInstWrapper" class="hidden space-y-2.5">
                                 <div>
                                     <label class="block text-xs font-semibold text-emerald-400 mb-1">Valor de Entrada (R$)</label>
-                                    <input type="number" step="0.01" id="newProdDownPayment" placeholder="0.00" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-emerald-400 border border-emerald-700">
+                                    <input type="number" step="0.01" id="newProdDownPayment" placeholder="0.00" class="w-full bg-black/70 rounded-xl p-2.5 text-sm text-emerald-400 border border-emerald-500/40">
                                 </div>
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                                     <div>
-                                        <label class="block text-xs font-semibold text-slate-400 mb-1">Parcelar Resto (x)</label>
-                                        <input type="number" id="newProdInstCount" value="1" min="1" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700">
+                                        <label class="block text-xs font-semibold text-emerald-200/70 mb-1">Parcelar Resto (x)</label>
+                                        <input type="number" id="newProdInstCount" value="1" min="1" class="w-full bg-black/70 rounded-xl p-2.5 text-sm text-white border border-emerald-500/25">
                                     </div>
                                     <div>
-                                        <label class="block text-xs font-semibold text-slate-400 mb-1">1ª Cobrança</label>
-                                        <input type="date" id="newProdFirstDue" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700 [color-scheme:dark]">
+                                        <label class="block text-xs font-semibold text-emerald-200/70 mb-1">1ª Cobrança</label>
+                                        <input type="date" id="newProdFirstDue" class="w-full bg-black/70 rounded-xl p-2.5 text-sm text-white border border-emerald-500/25 [color-scheme:dark]">
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <input type="text" id="newProdCustName" placeholder="Nome Cliente" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700">
-                            <input type="tel" id="newProdCustPhone" placeholder="WhatsApp (Apenas Números)" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700">
+                            <input type="text" id="newProdCustName" placeholder="Nome Cliente" class="w-full bg-black/70 rounded-xl p-2.5 text-sm text-white border border-emerald-500/25">
+                            <input type="tel" id="newProdCustPhone" placeholder="WhatsApp (Apenas Números)" class="w-full bg-black/70 rounded-xl p-2.5 text-sm text-white border border-emerald-500/25">
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold text-slate-400 mb-1 mt-2">Foto (Opcional)</label>
-                        <input type="file" id="prodPhoto" accept="image/*" class="w-full bg-slate-800/40 rounded-lg p-2 text-white border border-slate-700 text-xs sm:text-sm">
+                        <label class="block text-xs font-semibold text-emerald-200/70 mb-1 mt-2">Foto (Opcional)</label>
+                        <input type="file" id="prodPhoto" accept="image/*" class="w-full bg-black/60 rounded-xl p-2 text-white border border-emerald-500/25 text-xs sm:text-sm">
                     </div>
-                    <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg mt-2 text-sm touch-manipulation">Salvar Registro</button>
+                    <button type="submit" class="w-full bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-black font-extrabold py-3 px-4 rounded-xl shadow-lg shadow-emerald-950/60 mt-2 text-sm touch-manipulation transition">Salvar Registro</button>
                 </form>
             </section>
 
             <section class="xl:col-span-8 glass-panel p-4 sm:p-6 rounded-2xl min-h-[50vh] xl:h-[85vh] flex flex-col">
-                <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center mb-4 border-b border-slate-700 pb-3 gap-3">
-                    <h2 class="text-xs sm:text-sm font-bold text-slate-300 uppercase"><i class="fa-solid fa-list mr-2 text-blue-400"></i>Inventário & Histórico Global</h2>
-                    <input type="text" id="searchInput" oninput="renderProductsGrid()" placeholder="Pesquisar..." class="w-full sm:max-w-sm bg-slate-900 rounded-full px-4 py-2 text-sm text-white border border-slate-700 outline-none">
+                <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center mb-4 border-b border-emerald-500/15 pb-3 gap-3">
+                    <h2 class="text-xs sm:text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-list text-emerald-400"></i>
+                        <span>Inventário & Histórico</span>
+                    </h2>
+                    <input type="text" id="searchInput" oninput="renderProductsGrid()" placeholder="Pesquisar aparelho ou cliente..." class="w-full sm:max-w-xs bg-black/80 rounded-xl px-3.5 py-2 text-sm text-white border border-emerald-500/25 focus:border-emerald-400 outline-none">
                 </div>
-                <div id="historyGrid" class="flex-1 overflow-y-auto pr-0 sm:pr-2 space-y-3"></div>
+                <div id="historyGrid" class="flex-1 overflow-y-auto pr-0 sm:pr-2 space-y-2.5"></div>
             </section>
         </main>
 
-        <!-- ABA DE RANKING -->
-        <main id="view-ranking" class="tab-view hidden space-y-6 max-w-5xl mx-auto w-full">
-            <div class="glass-panel p-4 sm:p-6 md:p-8 rounded-2xl shadow-xl">
-                <h2 class="text-lg sm:text-xl font-bold text-white mb-2"><i class="fa-solid fa-ranking-star text-yellow-400 mr-2 sm:mr-3"></i>Ranking do Mês</h2>
-                <p class="text-slate-400 text-xs sm:text-sm mb-5">Categorias mais lucrativas vendidas no mês selecionado no topo. <strong class="text-blue-400">Toque na linha</strong> para ver as vendas.</p>
+        <!-- ABA SERVIÇOS -->
+        <main id="view-services" class="tab-view hidden grid grid-cols-1 xl:grid-cols-12 gap-5 sm:gap-7">
+            <section class="xl:col-span-4 h-fit glass-panel p-4 sm:p-6 rounded-2xl">
+                <h2 class="text-base sm:text-lg font-bold text-white mb-4 border-b border-emerald-500/15 pb-3 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center justify-center text-sm"><i class="fa-solid fa-wrench"></i></span>
+                    <span>Novo Serviço</span>
+                </h2>
+                <form id="srvForm" class="space-y-3.5">
+                    <input type="text" id="srvDesc" required placeholder="Descrição (Ex: Troca de Tela Moto G)" class="w-full bg-black/70 rounded-xl p-2.5 text-sm text-white border border-emerald-500/25 focus:border-emerald-400 outline-none">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="flex justify-between items-center text-xs font-semibold text-emerald-200/70 mb-1">
+                                Custo Deslocam. (R$)
+                                <button type="button" onclick="openCalc('srvTravel')" class="text-emerald-400 hover:text-emerald-300 px-1"><i class="fa-solid fa-calculator"></i></button>
+                            </label>
+                            <input type="number" step="0.01" id="srvTravel" placeholder="0.00" class="w-full bg-black/70 rounded-xl p-2.5 text-sm text-white border border-emerald-500/25">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-emerald-200/70 mb-1">Custo Peça (R$)</label>
+                            <input type="number" step="0.01" id="srvMat" placeholder="0.00" class="w-full bg-black/70 rounded-xl p-2.5 text-sm text-white border border-emerald-500/25">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-emerald-400 mb-1">Valor Cobrado (R$)</label>
+                            <input type="number" step="0.01" id="srvPrice" required placeholder="0.00" class="w-full bg-emerald-950/40 rounded-xl p-2.5 text-sm text-emerald-400 border border-emerald-500/40">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-emerald-200/70 mb-1">Data</label>
+                            <input type="date" id="srvDate" required class="w-full bg-black/70 rounded-xl p-2.5 text-sm text-white border border-emerald-500/25 [color-scheme:dark]">
+                        </div>
+                    </div>
 
-                <div class="bg-slate-900 rounded-xl border border-slate-700 overflow-x-auto shadow-inner w-full">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-emerald-200/70 mb-1">Pagamento</label>
+                            <select id="srvPayment" onchange="toggleSrvPayment(this.value)" class="w-full bg-black/70 rounded-xl p-2.5 text-sm text-white border border-emerald-500/25 outline-none cursor-pointer">
+                                <option value="avista">À Vista</option>
+                                <option value="parcelado">Parcelado / Com Entrada</option>
+                            </select>
+                        </div>
+                        <div id="srvInstWrapper" class="hidden">
+                            <label class="block text-xs font-semibold text-emerald-400 mb-1">Valor de Entrada (R$)</label>
+                            <input type="number" step="0.01" id="srvDownPayment" placeholder="0.00" class="w-full bg-black/70 rounded-xl p-2.5 text-sm text-emerald-400 border border-emerald-500/35">
+                        </div>
+                    </div>
+
+                    <div id="srvInstDetailsWrapper" class="hidden grid-cols-1 sm:grid-cols-2 gap-2.5 mt-2">
+                        <div>
+                            <label class="block text-xs font-semibold text-emerald-200/70 mb-1">Parcelar o resto em (x)</label>
+                            <input type="number" id="srvInstCount" value="1" min="1" class="w-full bg-black/70 rounded-xl p-2.5 text-sm text-white border border-emerald-500/25">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-emerald-200/70 mb-1">Data 1ª Cobrança</label>
+                            <input type="date" id="srvFirstDue" class="w-full bg-black/70 rounded-xl p-2.5 text-sm text-white border border-emerald-500/25 [color-scheme:dark]">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <input type="text" id="srvClient" placeholder="Nome do Cliente" class="w-full bg-black/70 rounded-xl p-2.5 text-sm text-white border border-emerald-500/25">
+                        <input type="tel" id="srvPhone" placeholder="WhatsApp (Apenas números)" class="w-full bg-black/70 rounded-xl p-2.5 text-sm text-white border border-emerald-500/25">
+                    </div>
+                    <button type="submit" class="w-full bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-black font-extrabold py-3 px-4 rounded-xl shadow-lg shadow-emerald-950/60 mt-2 text-sm touch-manipulation transition">Salvar Serviço Finalizado</button>
+                </form>
+            </section>
+
+            <section class="xl:col-span-8 glass-panel p-4 sm:p-6 rounded-2xl min-h-[50vh] xl:h-[85vh] flex flex-col">
+                <div class="flex justify-between items-center mb-4 border-b border-emerald-500/15 pb-3 gap-4">
+                    <h2 class="text-xs sm:text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-emerald-400"></i>
+                        <span>Histórico Global de Serviços</span>
+                    </h2>
+                </div>
+                <div id="servicesGrid" class="flex-1 overflow-y-auto pr-0 sm:pr-2 space-y-2.5"></div>
+            </section>
+        </main>
+
+        <!-- ABA MENU GESTÃO ("MAIS") — ESTILO LISTA DA REFERÊNCIA -->
+        <main id="view-more" class="tab-view hidden max-w-2xl mx-auto w-full space-y-4">
+            <div class="glass-panel rounded-2xl overflow-hidden divide-y divide-emerald-500/15">
+                <button type="button" onclick="switchTab('expenses')" class="w-full p-4 flex items-center justify-between gap-3 hover:bg-emerald-950/35 transition text-left cursor-pointer touch-manipulation">
+                    <div class="flex items-center gap-3.5 min-w-0">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-400/25 text-emerald-400 flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-receipt"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-sm sm:text-base font-bold text-white">Despesas Fixas</p>
+                            <p class="text-xs text-emerald-200/60 truncate">Lançar e controlar gastos operacionais</p>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-emerald-400/60 text-sm shrink-0"></i>
+                </button>
+
+                <button type="button" onclick="switchTab('prolabore')" class="w-full p-4 flex items-center justify-between gap-3 hover:bg-emerald-950/35 transition text-left cursor-pointer touch-manipulation">
+                    <div class="flex items-center gap-3.5 min-w-0">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-400/25 text-emerald-400 flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-user-tie"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-sm sm:text-base font-bold text-white">Pró-Labore</p>
+                            <p class="text-xs text-emerald-200/60 truncate">Retiradas mensais e semanais do sócio</p>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-emerald-400/60 text-sm shrink-0"></i>
+                </button>
+
+                <button type="button" onclick="switchTab('ranking')" class="w-full p-4 flex items-center justify-between gap-3 hover:bg-emerald-950/35 transition text-left cursor-pointer touch-manipulation">
+                    <div class="flex items-center gap-3.5 min-w-0">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-400/25 text-emerald-400 flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-trophy"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-sm sm:text-base font-bold text-white">Ranking do Mês</p>
+                            <p class="text-xs text-emerald-200/60 truncate">Categorias de aparelhos mais lucrativas</p>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-emerald-400/60 text-sm shrink-0"></i>
+                </button>
+
+                <button type="button" onclick="switchTab('settings')" class="w-full p-4 flex items-center justify-between gap-3 hover:bg-emerald-950/35 transition text-left cursor-pointer touch-manipulation">
+                    <div class="flex items-center gap-3.5 min-w-0">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-400/25 text-emerald-400 flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-sm sm:text-base font-bold text-white">Backup & Nuvem</p>
+                            <p class="text-xs text-emerald-200/60 truncate">Sincronizar Supabase, exportar e restaurar .json</p>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-emerald-400/60 text-sm shrink-0"></i>
+                </button>
+            </div>
+        </main>
+
+        <!-- ABA RANKING -->
+        <main id="view-ranking" class="tab-view hidden space-y-4 max-w-5xl mx-auto w-full">
+            <button type="button" onclick="switchTab('more')" class="inline-flex items-center gap-2 text-xs font-bold text-emerald-400 hover:text-emerald-300 px-3 py-1.5 rounded-xl bg-emerald-950/50 border border-emerald-500/25">
+                <i class="fa-solid fa-arrow-left"></i> Voltar para Gestão
+            </button>
+            <div class="glass-panel p-4 sm:p-6 md:p-8 rounded-2xl">
+                <h2 class="text-lg sm:text-xl font-bold text-white mb-1.5 flex items-center gap-2.5">
+                    <i class="fa-solid fa-ranking-star text-emerald-400"></i>
+                    <span>Ranking do Mês</span>
+                </h2>
+                <p class="text-emerald-200/65 text-xs sm:text-sm mb-5">Categorias mais lucrativas no mês selecionado. <strong class="text-emerald-400">Toque na linha</strong> para ver as vendas.</p>
+
+                <div class="bg-black/75 rounded-xl border border-emerald-500/20 overflow-x-auto w-full">
                     <table class="w-full min-w-[520px] text-left text-xs sm:text-sm text-slate-300 whitespace-nowrap">
-                        <thead class="bg-slate-800 text-slate-400 uppercase text-[11px] sm:text-xs font-bold">
+                        <thead class="bg-emerald-950/50 text-emerald-300/80 uppercase text-[11px] font-bold">
                             <tr>
                                 <th class="px-3 sm:px-5 py-3.5 w-20 sm:w-24">Posição</th>
                                 <th class="px-3 sm:px-5 py-3.5">Categoria / Produto</th>
@@ -290,150 +540,134 @@
                                 <th class="px-3 sm:px-5 py-3.5 text-right text-emerald-400">Lucro Total</th>
                             </tr>
                         </thead>
-                        <tbody id="rankingTableBody" class="divide-y divide-slate-700/50"></tbody>
+                        <tbody id="rankingTableBody" class="divide-y divide-emerald-500/15"></tbody>
                     </table>
                 </div>
             </div>
         </main>
 
-        <!-- ABA 3: SERVIÇOS -->
-        <main id="view-services" class="tab-view hidden grid grid-cols-1 xl:grid-cols-12 gap-6 sm:gap-8">
-            <section class="xl:col-span-4 h-fit glass-panel p-4 sm:p-6 rounded-2xl shadow-xl">
-                <h2 class="text-base sm:text-lg font-bold text-white mb-5 border-b border-slate-700 pb-3"><i class="fa-solid fa-wrench text-blue-400 mr-2"></i>Novo Serviço</h2>
-                <form id="srvForm" class="space-y-3.5">
-                    <input type="text" id="srvDesc" required placeholder="Descrição (Ex: Troca de Tela Moto G)" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <!-- ABA DESPESAS -->
+        <main id="view-expenses" class="tab-view hidden space-y-4">
+            <button type="button" onclick="switchTab('more')" class="inline-flex items-center gap-2 text-xs font-bold text-emerald-400 hover:text-emerald-300 px-3 py-1.5 rounded-xl bg-emerald-950/50 border border-emerald-500/25">
+                <i class="fa-solid fa-arrow-left"></i> Voltar para Gestão
+            </button>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-7">
+                <section class="glass-panel p-4 sm:p-6 rounded-2xl h-fit">
+                    <h2 class="text-base sm:text-lg font-bold text-white mb-4 border-b border-emerald-500/15 pb-3 flex items-center gap-2">
+                        <span class="w-8 h-8 rounded-lg bg-rose-500/15 text-rose-400 flex items-center justify-center text-sm"><i class="fa-solid fa-receipt"></i></span>
+                        <span>Nova Despesa Fixa</span>
+                    </h2>
+                    <form id="expenseForm" class="space-y-3.5">
+                        <input type="text" id="expDesc" required placeholder="Descrição (Ex: Aluguel, Internet)" class="w-full bg-black/70 rounded-xl p-2.5 text-sm text-white border border-emerald-500/25">
                         <div>
-                            <label class="flex justify-between items-center text-xs font-semibold text-slate-400 mb-1">
-                                Custo Deslocam. (R$)
-                                <button type="button" onclick="openCalc('srvTravel')" class="text-blue-400 hover:text-blue-300 px-1"><i class="fa-solid fa-calculator"></i></button>
-                            </label>
-                            <input type="number" step="0.01" id="srvTravel" placeholder="0.00" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700">
+                            <label class="block text-[11px] font-semibold text-emerald-200/70 mb-1">Data</label>
+                            <input type="date" id="expDate" required class="w-full bg-black/70 rounded-xl p-2.5 text-sm text-white border border-emerald-500/25 [color-scheme:dark]">
                         </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-400 mb-1">Custo Peça (R$)</label>
-                            <input type="number" step="0.01" id="srvMat" placeholder="0.00" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700">
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs font-semibold text-emerald-400 mb-1">Valor Cobrado (R$)</label>
-                            <input type="number" step="0.01" id="srvPrice" required placeholder="0.00" class="w-full bg-emerald-900/20 rounded-lg p-2.5 text-sm text-emerald-400 border border-emerald-700">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-400 mb-1">Data</label>
-                            <input type="date" id="srvDate" required class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700 [color-scheme:dark]">
-                        </div>
-                    </div>
+                        <input type="number" step="0.01" id="expValue" required placeholder="Valor R$" class="w-full bg-black/70 rounded-xl p-2.5 text-sm text-white border border-emerald-500/25">
+                        <button type="submit" class="w-full bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-400 text-white font-bold py-3 rounded-xl mt-2 text-sm touch-manipulation transition shadow-lg shadow-rose-950/50">Registrar Despesa</button>
+                    </form>
+                </section>
+                <section class="lg:col-span-2 glass-panel p-4 sm:p-6 rounded-2xl flex flex-col min-h-[45vh] lg:h-[70vh]">
+                    <h2 class="text-xs sm:text-sm font-bold text-white uppercase tracking-wider mb-4 border-b border-emerald-500/15 pb-3">Histórico Global de Despesas</h2>
+                    <div id="expenseGrid" class="flex-1 overflow-y-auto pr-0 sm:pr-2 space-y-2.5"></div>
+                </section>
+            </div>
+        </main>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <!-- ABA PRÓ-LABORE -->
+        <main id="view-prolabore" class="tab-view hidden space-y-4">
+            <button type="button" onclick="switchTab('more')" class="inline-flex items-center gap-2 text-xs font-bold text-emerald-400 hover:text-emerald-300 px-3 py-1.5 rounded-xl bg-emerald-950/50 border border-emerald-500/25">
+                <i class="fa-solid fa-arrow-left"></i> Voltar para Gestão
+            </button>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-7">
+                <section class="glass-panel p-4 sm:p-6 rounded-2xl h-fit">
+                    <h2 class="text-base sm:text-lg font-bold text-white mb-4 border-b border-emerald-500/15 pb-3 flex items-center gap-2">
+                        <span class="w-8 h-8 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center justify-center text-sm"><i class="fa-solid fa-user-tie"></i></span>
+                        <span>Retirada de Pró-Labore</span>
+                    </h2>
+                    <form id="prolaboreForm" class="space-y-3.5">
+                        <input type="text" id="proDesc" required placeholder="Descrição (Ex: Retirada Semanal / Mensal)" class="w-full bg-black/70 rounded-xl p-2.5 text-sm text-white border border-emerald-500/25">
                         <div>
-                            <label class="block text-xs font-semibold text-slate-400 mb-1">Pagamento</label>
-                            <select id="srvPayment" onchange="toggleSrvPayment(this.value)" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700 outline-none cursor-pointer">
-                                <option value="avista">À Vista</option>
-                                <option value="parcelado">Parcelado / Com Entrada</option>
-                            </select>
+                            <label class="block text-[11px] font-semibold text-emerald-200/70 mb-1">Data</label>
+                            <input type="date" id="proDate" required class="w-full bg-black/70 rounded-xl p-2.5 text-sm text-white border border-emerald-500/25 [color-scheme:dark]">
                         </div>
-                        <div id="srvInstWrapper" class="hidden">
-                            <label class="block text-xs font-semibold text-emerald-400 mb-1">Valor de Entrada (R$)</label>
-                            <input type="number" step="0.01" id="srvDownPayment" placeholder="0.00" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-emerald-400 border border-slate-700">
-                        </div>
-                    </div>
+                        <input type="number" step="0.01" id="proValue" required placeholder="Valor da Retirada R$" class="w-full bg-black/70 rounded-xl p-2.5 text-sm text-white border border-emerald-500/25">
+                        <button type="submit" class="w-full bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-black font-extrabold py-3 rounded-xl mt-2 text-sm touch-manipulation transition shadow-lg shadow-emerald-950/60">Registrar Retirada</button>
+                    </form>
+                </section>
+                <section class="lg:col-span-2 glass-panel p-4 sm:p-6 rounded-2xl flex flex-col min-h-[45vh] lg:h-[70vh]">
+                    <h2 class="text-xs sm:text-sm font-bold text-white uppercase tracking-wider mb-4 border-b border-emerald-500/15 pb-3">Histórico de Pró-Labore</h2>
+                    <div id="prolaboreGrid" class="flex-1 overflow-y-auto pr-0 sm:pr-2 space-y-2.5"></div>
+                </section>
+            </div>
+        </main>
 
-                    <div id="srvInstDetailsWrapper" class="hidden grid-cols-1 sm:grid-cols-2 gap-2.5 mt-2">
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-400 mb-1">Parcelar o resto em (x)</label>
-                            <input type="number" id="srvInstCount" value="1" min="1" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-400 mb-1">Data 1ª Cobrança</label>
-                            <input type="date" id="srvFirstDue" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700 [color-scheme:dark]">
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <input type="text" id="srvClient" placeholder="Nome do Cliente" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700">
-                        <input type="tel" id="srvPhone" placeholder="WhatsApp (Apenas números)" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700">
-                    </div>
-                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg mt-2 text-sm touch-manipulation">Salvar Serviço Finalizado</button>
-                </form>
-            </section>
-
-            <section class="xl:col-span-8 glass-panel p-4 sm:p-6 rounded-2xl min-h-[50vh] xl:h-[85vh] flex flex-col">
-                <div class="flex justify-between items-center mb-4 border-b border-slate-700 pb-3 gap-4">
-                    <h2 class="text-xs sm:text-sm font-bold text-slate-300 uppercase"><i class="fa-solid fa-list-check mr-2 text-blue-400"></i>Histórico Global de Serviços</h2>
+        <!-- ABA BACKUP & NUVEM -->
+        <main id="view-settings" class="tab-view hidden space-y-4 max-w-2xl mx-auto w-full">
+            <button type="button" onclick="switchTab('more')" class="inline-flex items-center gap-2 text-xs font-bold text-emerald-400 hover:text-emerald-300 px-3 py-1.5 rounded-xl bg-emerald-950/50 border border-emerald-500/25">
+                <i class="fa-solid fa-arrow-left"></i> Voltar para Gestão
+            </button>
+            <div class="glass-panel p-5 sm:p-8 rounded-2xl text-center">
+                <div class="w-12 h-12 rounded-2xl bg-emerald-500/15 border border-emerald-400/25 text-emerald-400 flex items-center justify-center text-xl mx-auto mb-3">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
                 </div>
-                <div id="servicesGrid" class="flex-1 overflow-y-auto pr-0 sm:pr-2 space-y-3"></div>
-            </section>
-        </main>
-
-        <!-- ABA 4: DESPESAS -->
-        <main id="view-expenses" class="tab-view hidden grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
-            <section class="glass-panel p-4 sm:p-6 rounded-2xl h-fit">
-                <h2 class="text-base sm:text-lg font-bold text-white mb-5 border-b border-slate-700 pb-3"><i class="fa-solid fa-cart-shopping text-red-400 mr-2"></i>Nova Despesa Fixa</h2>
-                <form id="expenseForm" class="space-y-3.5">
-                    <input type="text" id="expDesc" required placeholder="Descrição (Ex: Aluguel, Internet)" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700">
-                    <div>
-                        <label class="block text-[11px] font-semibold text-slate-400 mb-1">Data</label>
-                        <input type="date" id="expDate" required class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700 [color-scheme:dark]">
-                    </div>
-                    <input type="number" step="0.01" id="expValue" required placeholder="Valor R$" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700">
-                    <button type="submit" class="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-3 rounded-xl mt-2 text-sm touch-manipulation">Registrar Despesa</button>
-                </form>
-            </section>
-            <section class="lg:col-span-2 glass-panel p-4 sm:p-6 rounded-2xl flex flex-col min-h-[45vh] lg:h-[70vh]">
-                <h2 class="text-xs sm:text-sm font-bold text-slate-300 uppercase mb-4 border-b border-slate-700 pb-3">Histórico Global de Despesas</h2>
-                <div id="expenseGrid" class="flex-1 overflow-y-auto pr-0 sm:pr-2 space-y-2.5"></div>
-            </section>
-        </main>
-
-        <!-- ABA 5: PRÓ-LABORE -->
-        <main id="view-prolabore" class="tab-view hidden grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
-            <section class="glass-panel p-4 sm:p-6 rounded-2xl h-fit">
-                <h2 class="text-base sm:text-lg font-bold text-white mb-5 border-b border-slate-700 pb-3"><i class="fa-solid fa-user-tie text-blue-400 mr-2"></i>Retirada de Pró-Labore</h2>
-                <form id="prolaboreForm" class="space-y-3.5">
-                    <input type="text" id="proDesc" required placeholder="Descrição (Ex: Retirada Semanal / Mensal)" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700">
-                    <div>
-                        <label class="block text-[11px] font-semibold text-slate-400 mb-1">Data</label>
-                        <input type="date" id="proDate" required class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700 [color-scheme:dark]">
-                    </div>
-                    <input type="number" step="0.01" id="proValue" required placeholder="Valor da Retirada R$" class="w-full bg-slate-800/60 rounded-lg p-2.5 text-sm text-white border border-slate-700">
-                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl mt-2 text-sm touch-manipulation">Registrar Retirada</button>
-                </form>
-            </section>
-            <section class="lg:col-span-2 glass-panel p-4 sm:p-6 rounded-2xl flex flex-col min-h-[45vh] lg:h-[70vh]">
-                <h2 class="text-xs sm:text-sm font-bold text-slate-300 uppercase mb-4 border-b border-slate-700 pb-3">Histórico de Pró-Labore</h2>
-                <div id="prolaboreGrid" class="flex-1 overflow-y-auto pr-0 sm:pr-2 space-y-2.5"></div>
-            </section>
-        </main>
-
-        <!-- ABA 6: BACKUP & NUVEM -->
-        <main id="view-settings" class="tab-view hidden space-y-6 max-w-2xl mx-auto w-full">
-            <div class="glass-panel p-5 sm:p-8 rounded-2xl shadow-xl text-center">
-                <h2 class="text-xl sm:text-2xl font-bold text-white mb-2">Backup & Sincronização na Nuvem</h2>
-                <p class="text-xs sm:text-sm text-slate-400 mb-6">Todas as alterações são enviadas automaticamente para a nuvem e compartilhadas entre seus dispositivos.</p>
+                <h2 class="text-xl sm:text-2xl font-extrabold text-white mb-2">Backup & Sincronização</h2>
+                <p class="text-xs sm:text-sm text-emerald-200/65 mb-6">Todas as alterações são sincronizadas na nuvem entre seus dispositivos.</p>
 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <button type="button" onclick="pullFromCloud(true)" class="bg-emerald-600 hover:bg-emerald-500 text-white py-3.5 px-4 rounded-xl font-bold text-sm transition cursor-pointer touch-manipulation flex items-center justify-center gap-2">
+                    <button type="button" onclick="pullFromCloud(true)" class="bg-emerald-500 hover:bg-emerald-400 text-black py-3.5 px-4 rounded-xl font-extrabold text-sm transition cursor-pointer touch-manipulation flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/50">
                         <i class="fa-solid fa-rotate"></i><span>Sincronizar Agora</span>
                     </button>
-                    <button type="button" onclick="exportBackupJSON()" class="bg-slate-700 hover:bg-slate-600 text-white py-3.5 px-4 rounded-xl font-bold text-sm transition cursor-pointer touch-manipulation flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-download"></i><span>Baixar (.json)</span>
+                    <button type="button" onclick="exportBackupJSON()" class="bg-black/80 hover:bg-emerald-950/50 border border-emerald-500/30 text-white py-3.5 px-4 rounded-xl font-bold text-sm transition cursor-pointer touch-manipulation flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-download text-emerald-400"></i><span>Baixar (.json)</span>
                     </button>
-                    <label class="bg-blue-600 hover:bg-blue-500 text-white py-3.5 px-4 rounded-xl cursor-pointer font-bold text-sm transition flex items-center justify-center gap-2 touch-manipulation">
+                    <label class="bg-emerald-950/70 hover:bg-emerald-900/70 border border-emerald-400/35 text-emerald-300 py-3.5 px-4 rounded-xl cursor-pointer font-bold text-sm transition flex items-center justify-center gap-2 touch-manipulation">
                         <i class="fa-solid fa-upload"></i><span>Restaurar (.json)</span>
                         <input type="file" id="backupFileInput" accept=".json,application/json" class="hidden" onchange="importBackupJSON(event)">
                     </label>
                 </div>
-                <p id="backupStatusMsg" class="hidden mt-4 text-xs sm:text-sm font-semibold text-emerald-400 bg-emerald-950/60 border border-emerald-700/50 rounded-xl p-3"></p>
+                <p id="backupStatusMsg" class="hidden mt-4 text-xs sm:text-sm font-semibold text-emerald-300 bg-emerald-950/70 border border-emerald-500/40 rounded-xl p-3"></p>
             </div>
         </main>
     </div>
 
+    <!-- BARRA DE NAVEGAÇÃO INFERIOR ESTILO APP COM BOTÃO CENTRAL ($) EM DESTAQUE -->
+    <nav aria-label="Navegação inferior" class="no-print fixed bottom-0 inset-x-0 z-40 bg-[#060c09]/95 backdrop-blur-xl border-t border-emerald-500/20 pb-[env(safe-area-inset-bottom)]">
+        <div class="max-w-lg mx-auto grid grid-cols-5 items-center h-16 px-2 relative">
+            <button type="button" onclick="switchTab('products')" id="tab-products" class="tab-btn flex flex-col items-center justify-center gap-1 py-1 text-slate-400 hover:text-emerald-300 transition cursor-pointer touch-manipulation">
+                <i class="fa-solid fa-box-open text-base"></i>
+                <span class="text-[10px] font-bold">Produtos</span>
+            </button>
+
+            <button type="button" onclick="switchTab('services')" id="tab-services" class="tab-btn flex flex-col items-center justify-center gap-1 py-1 text-slate-400 hover:text-emerald-300 transition cursor-pointer touch-manipulation">
+                <i class="fa-solid fa-wrench text-base"></i>
+                <span class="text-[10px] font-bold">Serviços</span>
+            </button>
+
+            <!-- Botão Central em Destaque ($) -->
+            <div class="flex flex-col items-center justify-center -mt-6">
+                <button type="button" onclick="switchTab('faturamento')" id="tab-faturamento" class="center-fab center-fab-active w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center text-white text-2xl sm:text-3xl font-black transition duration-200 cursor-pointer touch-manipulation border-2 border-emerald-200/70" title="Faturamento do Mês">
+                    $
+                </button>
+                <span id="label-faturamento" class="text-[10px] font-extrabold text-emerald-400 mt-1">Faturamento</span>
+            </div>
+
+            <button type="button" onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn flex flex-col items-center justify-center gap-1 py-1 text-slate-400 hover:text-emerald-300 transition cursor-pointer touch-manipulation">
+                <i class="fa-solid fa-chart-pie text-base"></i>
+                <span class="text-[10px] font-bold">Resumo</span>
+            </button>
+
+            <button type="button" onclick="switchTab('more')" id="tab-more" class="tab-btn flex flex-col items-center justify-center gap-1 py-1 text-slate-400 hover:text-emerald-300 transition cursor-pointer touch-manipulation">
+                <i class="fa-solid fa-sliders text-base"></i>
+                <span class="text-[10px] font-bold">Gestão</span>
+            </button>
+        </div>
+    </nav>
+
     <!-- MODAL DE GERENCIAMENTO -->
-    <div id="appModal" onclick="if(event.target === this) closeModal()" class="no-print fixed inset-0 bg-black/80 hidden z-50 flex items-center justify-center p-3 sm:p-4">
-        <div class="bg-slate-800 border border-slate-600 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col max-h-[90dvh]">
-            <div class="p-3.5 sm:p-4 border-b border-slate-700 flex justify-between items-center bg-slate-900 shrink-0">
+    <div id="appModal" onclick="if(event.target === this) closeModal()" class="no-print fixed inset-0 bg-black/85 backdrop-blur-sm hidden z-50 flex items-center justify-center p-3 sm:p-4">
+        <div class="bg-[#09120e] border border-emerald-500/30 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col max-h-[90dvh]">
+            <div class="p-3.5 sm:p-4 border-b border-emerald-500/20 flex justify-between items-center bg-[#050907] shrink-0">
                 <h3 id="modalTitle" class="text-base sm:text-lg font-bold text-white truncate pr-2">Gerenciar</h3>
                 <button type="button" onclick="closeModal()" class="text-slate-400 hover:text-white text-xl p-1 shrink-0 touch-manipulation"><i class="fa-solid fa-xmark"></i></button>
             </div>
@@ -442,30 +676,30 @@
     </div>
 
     <!-- MODAL CALCULADORA DE FRETE -->
-    <div id="calcModal" onclick="if(event.target === this) closeCalc()" class="no-print fixed inset-0 bg-black/80 hidden z-[60] flex items-center justify-center p-3 sm:p-4">
-        <div class="bg-slate-800 border border-slate-600 rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden flex flex-col max-h-[90dvh]">
-            <div class="p-3.5 sm:p-4 border-b border-slate-700 flex justify-between items-center bg-slate-900 shrink-0">
-                <h3 class="text-base sm:text-lg font-bold text-white"><i class="fa-solid fa-gas-pump text-blue-400 mr-2"></i>Calculadora de Frete</h3>
+    <div id="calcModal" onclick="if(event.target === this) closeCalc()" class="no-print fixed inset-0 bg-black/85 backdrop-blur-sm hidden z-[60] flex items-center justify-center p-3 sm:p-4">
+        <div class="bg-[#09120e] border border-emerald-500/30 rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden flex flex-col max-h-[90dvh]">
+            <div class="p-3.5 sm:p-4 border-b border-emerald-500/20 flex justify-between items-center bg-[#050907] shrink-0">
+                <h3 class="text-base sm:text-lg font-bold text-white"><i class="fa-solid fa-gas-pump text-emerald-400 mr-2"></i>Calculadora de Frete</h3>
                 <button type="button" onclick="closeCalc()" class="text-slate-400 hover:text-white text-xl p-1 touch-manipulation"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="p-4 sm:p-5 space-y-4 overflow-y-auto overscroll-contain">
                 <input type="hidden" id="freightTarget">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-400 mb-1">Distância Total (Ida e Volta em Km)</label>
-                    <input type="number" step="0.1" id="calcKm" placeholder="Ex: 15.5" class="w-full bg-slate-900 rounded-lg p-2.5 text-sm text-white border border-slate-700">
+                    <label class="block text-xs font-semibold text-emerald-200/70 mb-1">Distância Total (Ida e Volta em Km)</label>
+                    <input type="number" step="0.1" id="calcKm" placeholder="Ex: 15.5" class="w-full bg-black/80 rounded-xl p-2.5 text-sm text-white border border-emerald-500/25">
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-400 mb-1">Consumo (Km/L)</label>
-                        <input type="number" step="0.1" id="calcKmL" placeholder="Ex: 10" class="w-full bg-slate-900 rounded-lg p-2.5 text-sm text-white border border-slate-700">
+                        <label class="block text-xs font-semibold text-emerald-200/70 mb-1">Consumo (Km/L)</label>
+                        <input type="number" step="0.1" id="calcKmL" placeholder="Ex: 10" class="w-full bg-black/80 rounded-xl p-2.5 text-sm text-white border border-emerald-500/25">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-400 mb-1">Preço Litro (R$)</label>
-                        <input type="number" step="0.01" id="calcPrice" placeholder="Ex: 5.80" class="w-full bg-slate-900 rounded-lg p-2.5 text-sm text-white border border-slate-700">
+                        <label class="block text-xs font-semibold text-emerald-200/70 mb-1">Preço Litro (R$)</label>
+                        <input type="number" step="0.01" id="calcPrice" placeholder="Ex: 5.80" class="w-full bg-black/80 rounded-xl p-2.5 text-sm text-white border border-emerald-500/25">
                     </div>
                 </div>
                 <div class="pt-2">
-                    <button type="button" onclick="applyFreight()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl shadow-lg text-sm touch-manipulation">Calcular e Aplicar</button>
+                    <button type="button" onclick="applyFreight()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold py-3 rounded-xl shadow-lg text-sm touch-manipulation">Calcular e Aplicar</button>
                 </div>
             </div>
         </div>
@@ -548,6 +782,8 @@
         let prolabore = normalizeSimpleList(safeReadJSON('solidTecProlabore', []));
 
         let chartInstance = null;
+        let paretoChartInstance = null;
+        let paretoMode = 'pareto'; // 'pareto' | 'chrono'
         let draggedItemId = null;
         let isSyncing = false;
 
@@ -555,6 +791,28 @@
         const yyyy = todayDate.getFullYear();
         const mm = String(todayDate.getMonth() + 1).padStart(2, '0');
         document.getElementById('globalMonthFilter').value = `${yyyy}-${mm}`;
+
+        window.changeMonth = function(delta) {
+            const input = document.getElementById('globalMonthFilter');
+            const [y, m] = (input.value || `${yyyy}-${mm}`).split('-').map(Number);
+            const d = new Date(y, (m - 1) + delta, 1);
+            input.value = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+            refreshMonthlyData();
+        };
+
+        window.setParetoMode = function(mode) {
+            paretoMode = mode;
+            const btnP = document.getElementById('btnModePareto');
+            const btnC = document.getElementById('btnModeChrono');
+            if (mode === 'pareto') {
+                btnP.className = 'px-2.5 py-1 rounded-lg bg-emerald-500 text-black transition cursor-pointer';
+                btnC.className = 'px-2.5 py-1 rounded-lg text-emerald-200/70 hover:text-white transition cursor-pointer';
+            } else {
+                btnC.className = 'px-2.5 py-1 rounded-lg bg-emerald-500 text-black transition cursor-pointer';
+                btnP.className = 'px-2.5 py-1 rounded-lg text-emerald-200/70 hover:text-white transition cursor-pointer';
+            }
+            updateParetoView();
+        };
 
         function showStorageNotice(msg) {
             const box = document.getElementById('storageNotice');
@@ -569,15 +827,13 @@
             const configs = {
                 syncing: { icon: 'fa-solid fa-rotate fa-spin text-amber-400', text: label || 'Sincronizando...' },
                 ok: { icon: 'fa-solid fa-cloud-check text-emerald-400', text: label || 'Nuvem OK' },
-                error: { icon: 'fa-solid fa-cloud-exclamation text-red-400', text: label || 'Offline' }
+                error: { icon: 'fa-solid fa-cloud-exclamation text-rose-400', text: label || 'Offline' }
             };
             const cfg = configs[state] || configs.ok;
-            ['syncBadgeMobile', 'syncBadgeDesktop'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) {
-                    el.innerHTML = `<i class="${cfg.icon}"></i><span>${cfg.text}</span>`;
-                }
-            });
+            const el = document.getElementById('syncBadge');
+            if (el) {
+                el.innerHTML = `<i class="${cfg.icon}"></i><span>${cfg.text}</span>`;
+            }
         }
 
         function updateLocalCacheOnly() {
@@ -617,7 +873,7 @@
             } catch (err) {
                 console.error('Erro ao enviar para Supabase:', err);
                 setSyncBadge('error', 'Erro Nuvem');
-                showStorageNotice('<strong>Aviso de sincronização:</strong> alteração salva neste aparelho, mas falhou ao enviar para a nuvem. Verifique se a tabela <code>solid_tec_store</code> foi criada no Supabase.');
+                showStorageNotice('<strong>Aviso de sincronização:</strong> alteração salva neste aparelho, mas falhou ao enviar para a nuvem.');
             } finally {
                 isSyncing = false;
             }
@@ -668,7 +924,7 @@
                 console.error('Erro ao baixar do Supabase:', err);
                 setSyncBadge('error', 'Offline');
                 if (manual) {
-                    showStorageNotice('<strong>Erro ao conectar na nuvem:</strong> confira se você executou o SQL de criação da tabela <code>solid_tec_store</code> no painel do Supabase.');
+                    showStorageNotice('<strong>Erro ao conectar na nuvem:</strong> verifique sua conexão e tente novamente.');
                 }
             } finally {
                 isSyncing = false;
@@ -683,6 +939,7 @@
         }
 
         function refreshMonthlyData() {
+            updateParetoView();
             updateDashboard();
             renderRankingTab();
             renderProductsGrid();
@@ -702,16 +959,29 @@
             }
 
             document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('bg-blue-500/20', 'text-blue-400');
-                btn.classList.add('text-slate-400', 'hover:text-white', 'hover:bg-slate-700');
+                btn.classList.remove('text-emerald-400');
+                btn.classList.add('text-slate-400');
             });
 
-            const activeBtn = document.getElementById('tab-' + tabId);
-            if (activeBtn) {
-                activeBtn.classList.remove('text-slate-400', 'hover:text-white', 'hover:bg-slate-700');
-                activeBtn.classList.add('bg-blue-500/20', 'text-blue-400');
+            const centerFab = document.getElementById('tab-faturamento');
+            const centerLabel = document.getElementById('label-faturamento');
+            if (tabId === 'faturamento') {
+                centerFab.classList.add('center-fab-active');
+                centerLabel.className = 'text-[10px] font-extrabold text-emerald-400 mt-1';
+            } else {
+                centerFab.classList.remove('center-fab-active');
+                centerLabel.className = 'text-[10px] font-bold text-slate-400 mt-1';
             }
 
+            const subMoreTabs = ['expenses', 'prolabore', 'ranking', 'settings'];
+            const navTarget = subMoreTabs.includes(tabId) ? 'more' : tabId;
+            const activeBtn = document.getElementById('tab-' + navTarget);
+            if (activeBtn && navTarget !== 'faturamento') {
+                activeBtn.classList.remove('text-slate-400');
+                activeBtn.classList.add('text-emerald-400');
+            }
+
+            if (tabId === 'faturamento') updateParetoView();
             if (tabId === 'dashboard') updateDashboard();
             if (tabId === 'products') renderProductsGrid();
             if (tabId === 'services') renderServicesGrid();
@@ -739,6 +1009,260 @@
             const [y, m, d] = parts;
             return `${d}/${m}/${y}`;
         };
+
+        // --- PARETO & FATURAMENTO DO MÊS (TELA PRINCIPAL $) ---
+        function getMonthlyDailyRevenue(monthFilter) {
+            const dailyMap = {};
+            let totalRev = 0;
+            let txCount = 0;
+
+            const addEntry = (dateStr, amount) => {
+                if (!amount || amount <= 0) return;
+                if (monthFilter && (!dateStr || !dateStr.startsWith(monthFilter))) return;
+                const day = (dateStr || '0000-00-01').split('-')[2] || '01';
+                if (!dailyMap[day]) dailyMap[day] = { day, rev: 0, count: 0 };
+                dailyMap[day].rev += amount;
+                dailyMap[day].count += 1;
+                totalRev += amount;
+                txCount += 1;
+            };
+
+            sales.forEach(sale => {
+                if (sale.status !== 'vendido') return;
+                if (sale.paymentType === 'avista') {
+                    addEntry(sale.saleDate, sale.salePrice);
+                } else {
+                    if (sale.downPayment > 0) addEntry(sale.saleDate, sale.downPayment);
+                    (sale.installments || []).forEach(inst => {
+                        if (inst.isPaid) addEntry(inst.dueDate, inst.amount);
+                    });
+                }
+            });
+
+            services.forEach(srv => {
+                if (srv.paymentType === 'avista') {
+                    addEntry(srv.date, srv.price);
+                } else {
+                    if (srv.downPayment > 0) addEntry(srv.date, srv.downPayment);
+                    (srv.installments || []).forEach(inst => {
+                        if (inst.isPaid) addEntry(inst.dueDate, inst.amount);
+                    });
+                }
+            });
+
+            return { dailyMap, totalRev, txCount };
+        }
+
+        function updateParetoView() {
+            const monthFilter = document.getElementById('globalMonthFilter').value;
+            const { dailyMap, totalRev, txCount } = getMonthlyDailyRevenue(monthFilter);
+
+            const allDays = Object.values(dailyMap);
+            const sortedDesc = [...allDays].sort((a, b) => b.rev - a.rev);
+
+            document.getElementById('fatTotalMonth').innerText = formatBRL(totalRev);
+            document.getElementById('fatSubtitle').innerText = txCount > 0
+                ? `${txCount} entrada(s) recebida(s) • Ticket médio ${formatBRL(totalRev / txCount)}`
+                : 'Nenhum faturamento recebido no período selecionado';
+
+            if (sortedDesc.length > 0) {
+                const top = sortedDesc[0];
+                const monthPart = monthFilter ? `/${monthFilter.split('-')[1]}` : '';
+                document.getElementById('fatPeakDay').innerText = `Dia ${top.day.padStart(2, '0')}${monthPart}`;
+                document.getElementById('fatPeakValue').innerText = formatBRL(top.rev);
+                document.getElementById('fatActiveDays').innerText = `${sortedDesc.length} ${sortedDesc.length === 1 ? 'dia' : 'dias'}`;
+            } else {
+                document.getElementById('fatPeakDay').innerText = '--';
+                document.getElementById('fatPeakValue').innerText = 'R$ 0,00';
+                document.getElementById('fatActiveDays').innerText = '0 dias';
+            }
+
+            // Monta série Pareto (ordenada decrescente) ou Cronológica
+            const seriesBase = paretoMode === 'pareto'
+                ? sortedDesc
+                : [...allDays].sort((a, b) => parseInt(a.day) - parseInt(b.day));
+
+            let cumulative = 0;
+            const labels = [];
+            const barValues = [];
+            const cumPercentages = [];
+            const barColors = [];
+
+            seriesBase.forEach((item, idx) => {
+                cumulative += item.rev;
+                const pctCum = totalRev > 0 ? Math.min(100, (cumulative / totalRev) * 100) : 0;
+                labels.push(item.day.padStart(2, '0'));
+                barValues.push(item.rev);
+                cumPercentages.push(Number(pctCum.toFixed(1)));
+
+                if (paretoMode === 'pareto') {
+                    // Destaca os dias que compõem os 80% principais de Pareto
+                    const prevPct = totalRev > 0 ? ((cumulative - item.rev) / totalRev) * 100 : 0;
+                    barColors.push(idx === 0 || prevPct < 80 ? '#10b981' : 'rgba(16, 185, 129, 0.32)');
+                } else {
+                    const isPeak = sortedDesc.length > 0 && item.day === sortedDesc[0].day;
+                    barColors.push(isPeak ? '#34d399' : '#10b981');
+                }
+            });
+
+            const canvas = document.getElementById('paretoChart');
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                if (paretoChartInstance) paretoChartInstance.destroy();
+
+                paretoChartInstance = new Chart(ctx, {
+                    data: {
+                        labels,
+                        datasets: [
+                            {
+                                type: 'line',
+                                label: '% Acumulado (Pareto)',
+                                data: cumPercentages,
+                                yAxisID: 'y1',
+                                borderColor: '#a7f3d0',
+                                backgroundColor: '#10b981',
+                                borderWidth: 2.5,
+                                pointRadius: 4,
+                                pointHoverRadius: 6,
+                                pointBackgroundColor: '#050907',
+                                pointBorderColor: '#6ee7b7',
+                                pointBorderWidth: 2,
+                                tension: 0.25
+                            },
+                            {
+                                type: 'bar',
+                                label: 'Faturamento (R$)',
+                                data: barValues,
+                                yAxisID: 'y',
+                                backgroundColor: barColors,
+                                borderRadius: 7,
+                                barPercentage: 0.68,
+                                categoryPercentage: 0.78
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        layout: { padding: { bottom: 4 } },
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: '#d1fae5',
+                                    usePointStyle: true,
+                                    pointStyle: 'circle',
+                                    boxWidth: 8,
+                                    font: { family: "'Plus Jakarta Sans', sans-serif", size: 11, weight: '600' }
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: '#07110c',
+                                borderColor: 'rgba(16, 185, 129, 0.45)',
+                                borderWidth: 1,
+                                titleFont: { family: "'Plus Jakarta Sans', sans-serif", weight: '700' },
+                                bodyFont: { family: "'Plus Jakarta Sans', sans-serif" },
+                                callbacks: {
+                                    title: (items) => `Dia ${items[0].label}`,
+                                    label: (c) => c.dataset.yAxisID === 'y1'
+                                        ? `Acumulado Pareto: ${c.parsed.y}%`
+                                        : `Faturamento: ${formatBRL(c.parsed.y)}`
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                position: 'left',
+                                border: { display: false },
+                                grid: { color: 'rgba(16, 185, 129, 0.12)' },
+                                ticks: { color: '#6ee7b7', font: { family: "'Plus Jakarta Sans', sans-serif", size: 10 } }
+                            },
+                            y1: {
+                                position: 'right',
+                                min: 0,
+                                max: 100,
+                                border: { display: false },
+                                grid: { drawOnChartArea: false },
+                                ticks: {
+                                    color: '#a7f3d0',
+                                    callback: (v) => v + '%',
+                                    font: { family: "'Plus Jakarta Sans', sans-serif", size: 10 }
+                                }
+                            },
+                            x: {
+                                border: { display: false },
+                                grid: { display: false },
+                                ticks: {
+                                    color: '#d1fae5',
+                                    maxRotation: 0,
+                                    minRotation: 0,
+                                    autoSkip: true,
+                                    font: { family: "'Plus Jakarta Sans', sans-serif", size: 11, weight: '700' }
+                                }
+                            }
+                        },
+                        onClick: (e, elements) => {
+                            if (elements.length > 0) {
+                                const idx = elements[0].index;
+                                const day = String(paretoChartInstance.data.labels[idx]).padStart(2, '0');
+                                const filter = document.getElementById('globalMonthFilter').value;
+                                if (filter) openDayDetails(`${filter}-${day}`);
+                            }
+                        },
+                        onHover: (e, elements) => { e.native.target.style.cursor = elements.length ? 'pointer' : 'default'; }
+                    }
+                });
+            }
+
+            // Lista de Picos Diários (Ranking Pareto)
+            const listEl = document.getElementById('paretoPeakList');
+            if (!listEl) return;
+            listEl.innerHTML = '';
+
+            if (sortedDesc.length === 0) {
+                listEl.innerHTML = '<p class="text-emerald-200/50 text-center py-6 text-xs sm:text-sm">Nenhuma venda registrada neste mês ainda.</p>';
+                return;
+            }
+
+            let runSum = 0;
+            const maxRev = sortedDesc[0].rev || 1;
+            const monthLabel = monthFilter ? `/${monthFilter.split('-')[1]}` : '';
+
+            sortedDesc.forEach((item, index) => {
+                runSum += item.rev;
+                const sharePct = totalRev > 0 ? (item.rev / totalRev) * 100 : 0;
+                const cumPct = totalRev > 0 ? Math.min(100, (runSum / totalRev) * 100) : 0;
+                const barWidth = Math.max(6, (item.rev / maxRev) * 100);
+                const fullDate = monthFilter ? `${monthFilter}-${item.day.padStart(2, '0')}` : '';
+
+                const isVital = index === 0 || ((runSum - item.rev) / totalRev) * 100 < 80;
+                const badgeRank = index === 0
+                    ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500 text-black">1º PICO</span>'
+                    : `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${isVital ? 'bg-emerald-500/20 text-emerald-300' : 'bg-white/5 text-slate-400'}">${index + 1}º</span>`;
+
+                listEl.innerHTML += `
+                    <div onclick="${fullDate ? `openDayDetails('${fullDate}')` : ''}" class="bg-black/60 hover:bg-emerald-950/35 border ${index === 0 ? 'border-emerald-400/45' : 'border-emerald-500/15'} rounded-xl p-3 transition cursor-pointer">
+                        <div class="flex items-center justify-between gap-2 mb-1.5">
+                            <div class="flex items-center gap-2 min-w-0">
+                                ${badgeRank}
+                                <span class="font-bold text-xs sm:text-sm text-white">Dia ${item.day.padStart(2, '0')}${monthLabel}</span>
+                                <span class="text-[11px] text-emerald-200/55">(${item.count} ${item.count === 1 ? 'venda' : 'vendas'})</span>
+                            </div>
+                            <div class="text-right shrink-0 tabular-nums">
+                                <span class="font-extrabold text-xs sm:text-sm text-emerald-400">${formatBRL(item.rev)}</span>
+                                <span class="text-[10px] text-emerald-200/60 ml-1.5">${sharePct.toFixed(0)}%</span>
+                            </div>
+                        </div>
+                        <div class="w-full h-1.5 bg-emerald-950 rounded-full overflow-hidden">
+                            <div class="h-full rounded-full ${isVital ? 'bg-gradient-to-r from-emerald-500 to-green-400' : 'bg-emerald-700/60'}" style="width: ${barWidth}%"></div>
+                        </div>
+                        <div class="flex justify-between items-center mt-1 text-[10px] text-emerald-200/50 tabular-nums">
+                            <span>Acumulado Pareto: <strong class="text-emerald-300">${cumPct.toFixed(1)}%</strong></span>
+                            <span class="text-emerald-400/80">Ver detalhes <i class="fa-solid fa-chevron-right text-[9px]"></i></span>
+                        </div>
+                    </div>
+                `;
+            });
+        }
 
         // SISTEMA DE NOTIFICAÇÃO E COBRANÇAS
         function getPendingBillings() {
@@ -771,32 +1295,27 @@
 
         function updateBillingNotification() {
             const pending = getPendingBillings();
-            const btnDesk = document.getElementById('btnNotif');
-            const countDesk = document.getElementById('notifCount');
-            const btnMob = document.getElementById('btnNotifMobile');
-            const countMob = document.getElementById('notifCountMobile');
+            const btn = document.getElementById('btnNotif');
+            const count = document.getElementById('notifCount');
 
             if (pending.length > 0) {
-                if (btnDesk) btnDesk.classList.remove('hidden');
-                if (countDesk) countDesk.innerText = pending.length;
-                if (btnMob) btnMob.classList.remove('hidden');
-                if (countMob) countMob.innerText = pending.length;
+                if (btn) btn.classList.remove('hidden');
+                if (count) count.innerText = pending.length;
                 document.title = `(${pending.length}) Solid Tec | Sistema de Gestão`;
             } else {
-                if (btnDesk) btnDesk.classList.add('hidden');
-                if (btnMob) btnMob.classList.add('hidden');
+                if (btn) btn.classList.add('hidden');
                 document.title = 'Solid Tec | Sistema de Gestão';
             }
         }
 
         window.openBillingCenter = function() {
             const pending = getPendingBillings();
-            document.getElementById('modalTitle').innerHTML = '<i class="fa-solid fa-bell text-red-400 mr-2 animate-pulse"></i>Central de Cobranças';
+            document.getElementById('modalTitle').innerHTML = '<i class="fa-solid fa-bell text-rose-400 mr-2 animate-pulse"></i>Central de Cobranças';
 
             let html = '<div class="space-y-3">';
 
             if (pending.length === 0) {
-                html += '<p class="text-emerald-400 text-center text-sm font-bold bg-emerald-900/30 p-4 rounded-xl border border-emerald-700/50">🎉 Nenhuma cobrança pendente para hoje ou atrasada!</p>';
+                html += '<p class="text-emerald-400 text-center text-sm font-bold bg-emerald-950/50 p-4 rounded-xl border border-emerald-700/50">🎉 Nenhuma cobrança pendente para hoje ou atrasada!</p>';
             } else {
                 pending.forEach(p => {
                     const itemName = p.type === 'sale' ? p.item.name : p.item.desc;
@@ -805,32 +1324,32 @@
 
                     const todayStr = new Date().toISOString().split('T')[0];
                     const isOverdue = p.inst.dueDate < todayStr;
-                    const statusBadge = isOverdue ? '<span class="bg-red-500/20 text-red-400 text-[10px] px-2 py-0.5 rounded font-bold uppercase shrink-0">Atrasado</span>' : '<span class="bg-yellow-500/20 text-yellow-400 text-[10px] px-2 py-0.5 rounded font-bold uppercase shrink-0">Vence Hoje</span>';
+                    const statusBadge = isOverdue ? '<span class="bg-rose-500/20 text-rose-400 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase shrink-0">Atrasado</span>' : '<span class="bg-amber-500/20 text-amber-400 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase shrink-0">Vence Hoje</span>';
 
                     let btnWhatsApp = '';
                     if (phone.trim() !== '') {
                         const foneLimpo = phone.replace(/\D/g, '');
                         const msg = `Olá ${clientName}, tudo bem? Aqui é da Solid Tec. Passando para lembrar sobre o vencimento da sua parcela ${p.inst.num} referente ao ${itemName} no valor de ${formatBRL(p.inst.amount)}.`;
-                        btnWhatsApp = `<a href="https://wa.me/55${foneLimpo}?text=${encodeURIComponent(msg)}" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold py-2 px-3 rounded flex items-center gap-2 transition" title="Enviar Cobrança"><i class="fa-brands fa-whatsapp text-sm"></i></a>`;
+                        btnWhatsApp = `<a href="https://wa.me/55${foneLimpo}?text=${encodeURIComponent(msg)}" target="_blank" class="bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-bold py-2 px-3 rounded-lg flex items-center gap-2 transition" title="Enviar Cobrança"><i class="fa-brands fa-whatsapp text-sm"></i></a>`;
                     } else {
                         btnWhatsApp = `<span class="text-xs text-slate-500 italic px-2">Sem WhatsApp</span>`;
                     }
 
-                    const btnPay = `<button type="button" onclick="payFromBillingCenter('${p.type}', ${p.item.id}, ${p.inst.id})" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold py-2 px-3 rounded flex items-center gap-2 transition"><i class="fa-solid fa-check"></i> Receber</button>`;
+                    const btnPay = `<button type="button" onclick="payFromBillingCenter('${p.type}', ${p.item.id}, ${p.inst.id})" class="bg-emerald-900/80 hover:bg-emerald-800 border border-emerald-500/40 text-emerald-200 text-xs font-bold py-2 px-3 rounded-lg flex items-center gap-1.5 transition"><i class="fa-solid fa-check"></i> Receber</button>`;
 
                     html += `
-                        <div class="bg-slate-900 p-3 rounded-xl border border-slate-700 flex flex-col gap-2 relative overflow-hidden">
-                            <div class="absolute left-0 top-0 bottom-0 w-1 ${isOverdue ? 'bg-red-500' : 'bg-yellow-500'}"></div>
+                        <div class="bg-black/70 p-3.5 rounded-xl border border-emerald-500/20 flex flex-col gap-2 relative overflow-hidden">
+                            <div class="absolute left-0 top-0 bottom-0 w-1 ${isOverdue ? 'bg-rose-500' : 'bg-amber-500'}"></div>
                             <div class="flex justify-between items-start pl-2 gap-2">
                                 <div class="min-w-0">
                                     <h4 class="text-white font-bold text-sm truncate">${clientName}</h4>
-                                    <p class="text-[11px] text-slate-400 truncate">${itemName}</p>
+                                    <p class="text-[11px] text-emerald-200/60 truncate">${itemName}</p>
                                 </div>
                                 ${statusBadge}
                             </div>
-                            <div class="flex flex-wrap justify-between items-center text-xs pl-2 border-t border-slate-800 pt-2 mt-1 gap-2">
+                            <div class="flex flex-wrap justify-between items-center text-xs pl-2 border-t border-emerald-500/15 pt-2 mt-1 gap-2">
                                 <div>
-                                    <p class="text-slate-300 font-bold">${p.inst.num}ª Parcela: <span class="text-red-400">${formatBRL(p.inst.amount)}</span></p>
+                                    <p class="text-slate-300 font-bold">${p.inst.num}ª Parcela: <span class="text-rose-400 tabular-nums">${formatBRL(p.inst.amount)}</span></p>
                                     <p class="text-[10px] text-slate-500 mt-0.5">Vencimento: ${formatDataBR(p.inst.dueDate)}</p>
                                 </div>
                                 <div class="flex gap-2 items-center">
@@ -866,7 +1385,7 @@
             if (window.innerWidth < 768) return;
             draggedItemId = id;
             e.dataTransfer.effectAllowed = "move";
-            setTimeout(() => { e.target.classList.add('opacity-40', 'border-blue-500'); }, 0);
+            setTimeout(() => { e.target.classList.add('opacity-40', 'border-emerald-400'); }, 0);
         };
         window.allowDrop = function(e) { e.preventDefault(); };
         window.drop = function(e, dropTargetId) {
@@ -883,7 +1402,7 @@
             }
         };
         window.dragEnd = function(e) {
-            e.target.classList.remove('opacity-40', 'border-blue-500');
+            e.target.classList.remove('opacity-40', 'border-emerald-400');
             draggedItemId = null;
         };
 
@@ -917,7 +1436,7 @@
         };
 
         window.toggleNewProdSoldFields = function(val) {
-            document.getElementById('newProdSoldFields').className = val === 'vendido' ? 'block space-y-4 pt-4 mt-2 border-t border-slate-700' : 'hidden';
+            document.getElementById('newProdSoldFields').className = val === 'vendido' ? 'block space-y-4 pt-4 mt-2 border-t border-emerald-500/15' : 'hidden';
         };
         window.toggleNewProdPayment = function(val) {
             document.getElementById('newProdInstWrapper').className = val === 'parcelado' ? 'block space-y-2.5' : 'hidden';
@@ -1123,75 +1642,75 @@
 
             let html = `
                 <form onsubmit="saveItemChanges(event, ${sale.id})" class="space-y-4">
-                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 flex flex-col items-center gap-3">
-                        <div class="w-24 h-24 bg-slate-800 rounded-lg flex items-center justify-center border border-slate-600 overflow-hidden relative">
-                            ${sale.photo ? `<img id="modalPhotoPreview" src="${sale.photo}" class="w-full h-full object-cover">` : `<div id="modalPhotoPreview" class="text-slate-500 text-3xl"><i class="fa-solid fa-mobile-screen"></i></div>`}
+                    <div class="bg-black/60 p-3 rounded-xl border border-emerald-500/20 flex flex-col items-center gap-3">
+                        <div class="w-24 h-24 bg-black rounded-xl flex items-center justify-center border border-emerald-500/25 overflow-hidden relative">
+                            ${sale.photo ? `<img id="modalPhotoPreview" src="${sale.photo}" class="w-full h-full object-cover">` : `<div id="modalPhotoPreview" class="text-emerald-400/50 text-3xl"><i class="fa-solid fa-mobile-screen"></i></div>`}
                         </div>
                         <div class="w-full">
-                            <label class="block text-xs font-semibold text-slate-400 mb-1">Trocar / Adicionar Foto</label>
-                            <input type="file" id="mProdPhoto" accept="image/*" class="w-full bg-slate-800 rounded-lg p-2 text-white border border-slate-600 text-xs cursor-pointer">
+                            <label class="block text-xs font-semibold text-emerald-200/70 mb-1">Trocar / Adicionar Foto</label>
+                            <input type="file" id="mProdPhoto" accept="image/*" class="w-full bg-black/80 rounded-xl p-2 text-white border border-emerald-500/25 text-xs cursor-pointer">
                         </div>
                     </div>
 
-                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 space-y-3">
-                        <p class="text-xs font-bold text-slate-300 uppercase">Informações do Aparelho</p>
+                    <div class="bg-black/60 p-3 rounded-xl border border-emerald-500/20 space-y-3">
+                        <p class="text-xs font-bold text-emerald-300 uppercase">Informações do Aparelho</p>
                         <div>
-                            <label class="block text-xs font-semibold text-slate-400 mb-1">Nome do Produto / Aparelho</label>
-                            <input type="text" id="mProdName" value="${sale.name}" required class="w-full bg-slate-800 rounded-lg p-2.5 text-sm text-white border border-slate-600 outline-none">
+                            <label class="block text-xs font-semibold text-emerald-200/70 mb-1">Nome do Produto / Aparelho</label>
+                            <input type="text" id="mProdName" value="${sale.name}" required class="w-full bg-black/80 rounded-xl p-2.5 text-sm text-white border border-emerald-500/25 outline-none">
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div>
-                                <label class="block text-xs font-semibold text-slate-400 mb-1">IMEI / Número Série</label>
-                                <input type="text" id="mProdSerial" value="${sale.serial || ''}" class="w-full bg-slate-800 rounded-lg p-2.5 text-sm text-white border border-slate-600 outline-none">
+                                <label class="block text-xs font-semibold text-emerald-200/70 mb-1">IMEI / Número Série</label>
+                                <input type="text" id="mProdSerial" value="${sale.serial || ''}" class="w-full bg-black/80 rounded-xl p-2.5 text-sm text-white border border-emerald-500/25 outline-none">
                             </div>
                             <div>
-                                <label class="block text-xs font-semibold text-slate-400 mb-1">Data de Entrada</label>
-                                <input type="date" id="mBuyDate" value="${sale.buyDate || ''}" required class="w-full bg-slate-800 rounded-lg p-2.5 text-sm text-white border border-slate-600 outline-none [color-scheme:dark]">
+                                <label class="block text-xs font-semibold text-emerald-200/70 mb-1">Data de Entrada</label>
+                                <input type="date" id="mBuyDate" value="${sale.buyDate || ''}" required class="w-full bg-black/80 rounded-xl p-2.5 text-sm text-white border border-emerald-500/25 outline-none [color-scheme:dark]">
                             </div>
                         </div>
                     </div>
 
-                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700">
-                        <p class="text-xs font-bold text-slate-300 uppercase mb-3">Custos</p>
+                    <div class="bg-black/60 p-3 rounded-xl border border-emerald-500/20">
+                        <p class="text-xs font-bold text-emerald-300 uppercase mb-3">Custos</p>
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                             <div>
-                                <label class="block text-[11px] font-semibold text-slate-400 mb-1">Base (R$)</label>
-                                <input type="number" step="0.01" id="mCostAcq" value="${sale.costAcq}" class="w-full bg-slate-800 rounded-lg p-2 text-sm text-white border border-slate-600 outline-none">
+                                <label class="block text-[11px] font-semibold text-emerald-200/70 mb-1">Base (R$)</label>
+                                <input type="number" step="0.01" id="mCostAcq" value="${sale.costAcq}" class="w-full bg-black/80 rounded-xl p-2 text-sm text-white border border-emerald-500/25 outline-none">
                             </div>
                             <div>
-                                <label class="block text-[11px] font-semibold text-slate-400 mb-1">Peças (R$)</label>
-                                <input type="number" step="0.01" id="mCostVar" value="${sale.costVar}" class="w-full bg-slate-800 rounded-lg p-2 text-sm text-white border border-slate-600 outline-none">
+                                <label class="block text-[11px] font-semibold text-emerald-200/70 mb-1">Peças (R$)</label>
+                                <input type="number" step="0.01" id="mCostVar" value="${sale.costVar}" class="w-full bg-black/80 rounded-xl p-2 text-sm text-white border border-emerald-500/25 outline-none">
                             </div>
                             <div>
-                                <label class="flex justify-between items-center text-[11px] font-semibold text-slate-400 mb-1">Frete <button type="button" onclick="openCalc('mCostTravel')" class="text-blue-400 hover:text-blue-300 px-1"><i class="fa-solid fa-calculator"></i></button></label>
-                                <input type="number" step="0.01" id="mCostTravel" value="${sale.costTravel || 0}" class="w-full bg-slate-800 rounded-lg p-2 text-sm text-white border border-slate-600 outline-none">
+                                <label class="flex justify-between items-center text-[11px] font-semibold text-emerald-200/70 mb-1">Frete <button type="button" onclick="openCalc('mCostTravel')" class="text-emerald-400 hover:text-emerald-300 px-1"><i class="fa-solid fa-calculator"></i></button></label>
+                                <input type="number" step="0.01" id="mCostTravel" value="${sale.costTravel || 0}" class="w-full bg-black/80 rounded-xl p-2 text-sm text-white border border-emerald-500/25 outline-none">
                             </div>
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold text-slate-400 mb-1">Status do Aparelho</label>
-                        <select id="mStatus" onchange="toggleModalFields(this.value)" class="w-full bg-slate-800 rounded-lg p-2.5 text-sm text-white border border-slate-600 outline-none cursor-pointer">
+                        <label class="block text-xs font-semibold text-emerald-200/70 mb-1">Status do Aparelho</label>
+                        <select id="mStatus" onchange="toggleModalFields(this.value)" class="w-full bg-black/80 rounded-xl p-2.5 text-sm text-white border border-emerald-500/25 outline-none cursor-pointer">
                             <option value="estoque" ${sale.status === 'estoque' ? 'selected' : ''}>📦 Em Estoque</option>
                             <option value="vendido" ${sale.status === 'vendido' ? 'selected' : ''}>✅ Vendido</option>
                         </select>
                     </div>
 
-                    <div id="mSoldFields" class="${sale.status === 'vendido' ? 'block' : 'hidden'} space-y-4 pt-4 border-t border-slate-700">
+                    <div id="mSoldFields" class="${sale.status === 'vendido' ? 'block' : 'hidden'} space-y-4 pt-4 border-t border-emerald-500/15">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div>
                                 <label class="block text-xs font-semibold text-emerald-400 mb-1">Valor Venda Total (R$)</label>
-                                <input type="number" step="0.01" id="mSalePrice" value="${sale.salePrice || ''}" class="w-full bg-slate-900 rounded-lg p-2.5 text-sm text-emerald-400 border border-slate-700">
+                                <input type="number" step="0.01" id="mSalePrice" value="${sale.salePrice || ''}" class="w-full bg-black/80 rounded-xl p-2.5 text-sm text-emerald-400 border border-emerald-500/35">
                             </div>
                             <div>
-                                <label class="block text-xs font-semibold text-slate-400 mb-1">Data da Venda</label>
-                                <input type="date" id="mSaleDate" value="${sale.saleDate || ''}" class="w-full bg-slate-900 rounded-lg p-2.5 text-sm text-white border border-slate-700 [color-scheme:dark]">
+                                <label class="block text-xs font-semibold text-emerald-200/70 mb-1">Data da Venda</label>
+                                <input type="date" id="mSaleDate" value="${sale.saleDate || ''}" class="w-full bg-black/80 rounded-xl p-2.5 text-sm text-white border border-emerald-500/25 [color-scheme:dark]">
                             </div>
                         </div>
                         <div class="space-y-3">
                             <div>
-                                <label class="block text-xs font-semibold text-slate-400 mb-1">Pagamento</label>
-                                <select id="mPaymentType" onchange="toggleProductPaymentFields(this.value)" class="w-full bg-slate-900 rounded-lg p-2.5 text-sm text-white border border-slate-700 cursor-pointer">
+                                <label class="block text-xs font-semibold text-emerald-200/70 mb-1">Pagamento</label>
+                                <select id="mPaymentType" onchange="toggleProductPaymentFields(this.value)" class="w-full bg-black/80 rounded-xl p-2.5 text-sm text-white border border-emerald-500/25 cursor-pointer">
                                     <option value="avista" ${sale.paymentType === 'avista' ? 'selected' : ''}>À Vista</option>
                                     <option value="parcelado" ${sale.paymentType === 'parcelado' ? 'selected' : ''}>Parcelado / Com Entrada</option>
                                 </select>
@@ -1199,53 +1718,53 @@
                             <div id="mInstWrapper" class="${sale.paymentType === 'parcelado' ? 'block' : 'hidden'} space-y-2.5">
                                 <div>
                                     <label class="block text-xs font-semibold text-emerald-400 mb-1">Valor de Entrada (R$)</label>
-                                    <input type="number" step="0.01" id="mDownPayment" value="${sale.downPayment || ''}" placeholder="0.00" class="w-full bg-slate-900 rounded-lg p-2.5 text-sm text-emerald-400 border border-slate-700">
+                                    <input type="number" step="0.01" id="mDownPayment" value="${sale.downPayment || ''}" placeholder="0.00" class="w-full bg-black/80 rounded-xl p-2.5 text-sm text-emerald-400 border border-emerald-500/35">
                                 </div>
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                                     <div>
-                                        <label class="block text-xs font-semibold text-slate-400 mb-1">Parcelar Resto (x)</label>
-                                        <input type="number" id="mInstCount" value="${sale.installments.length || 1}" min="1" class="w-full bg-slate-900 rounded-lg p-2.5 text-sm text-white border border-slate-700">
+                                        <label class="block text-xs font-semibold text-emerald-200/70 mb-1">Parcelar Resto (x)</label>
+                                        <input type="number" id="mInstCount" value="${sale.installments.length || 1}" min="1" class="w-full bg-black/80 rounded-xl p-2.5 text-sm text-white border border-emerald-500/25">
                                     </div>
                                     <div>
-                                        <label class="block text-xs font-semibold text-slate-400 mb-1">Data 1ª Cobrança</label>
-                                        <input type="date" id="mFirstDue" value="${firstDueVal}" class="w-full bg-slate-900 rounded-lg p-2.5 text-sm text-white border border-slate-700 [color-scheme:dark]">
+                                        <label class="block text-xs font-semibold text-emerald-200/70 mb-1">Data 1ª Cobrança</label>
+                                        <input type="date" id="mFirstDue" value="${firstDueVal}" class="w-full bg-black/80 rounded-xl p-2.5 text-sm text-white border border-emerald-500/25 [color-scheme:dark]">
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <input type="text" id="mCustName" value="${sale.custName || ''}" placeholder="Nome Cliente" class="w-full bg-slate-900 rounded-lg p-2.5 text-sm text-white border border-slate-700">
-                            <input type="tel" id="mCustPhone" value="${sale.custPhone || ''}" placeholder="WhatsApp" class="w-full bg-slate-900 rounded-lg p-2.5 text-sm text-white border border-slate-700">
+                            <input type="text" id="mCustName" value="${sale.custName || ''}" placeholder="Nome Cliente" class="w-full bg-black/80 rounded-xl p-2.5 text-sm text-white border border-emerald-500/25">
+                            <input type="tel" id="mCustPhone" value="${sale.custPhone || ''}" placeholder="WhatsApp" class="w-full bg-black/80 rounded-xl p-2.5 text-sm text-white border border-emerald-500/25">
                         </div>
                     </div>
-                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl mt-4 shadow-lg text-sm touch-manipulation"><i class="fa-solid fa-floppy-disk mr-2"></i>Salvar Alterações</button>
+                    <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold py-3 rounded-xl mt-4 shadow-lg text-sm touch-manipulation"><i class="fa-solid fa-floppy-disk mr-2"></i>Salvar Alterações</button>
                 </form>
             `;
 
             if (sale.status === 'vendido' && sale.paymentType === 'parcelado') {
-                html += `<div class="mt-6 border-t border-slate-700 pt-4"><h4 class="text-sm font-bold text-slate-300 mb-3"><i class="fa-solid fa-money-check-dollar text-emerald-400 mr-2"></i>Controle de Parcelas</h4><div class="space-y-2">`;
+                html += `<div class="mt-6 border-t border-emerald-500/20 pt-4"><h4 class="text-sm font-bold text-emerald-200 mb-3"><i class="fa-solid fa-money-check-dollar text-emerald-400 mr-2"></i>Controle de Parcelas</h4><div class="space-y-2">`;
                 if (sale.downPayment > 0) {
-                    html += `<div class="flex justify-between items-center bg-emerald-900/30 p-2.5 rounded border border-emerald-700/50 text-xs sm:text-sm"><div><p class="text-emerald-400 font-bold">Entrada na Compra</p></div><span class="text-emerald-400 font-bold">${formatBRL(sale.downPayment)} (Pago)</span></div>`;
+                    html += `<div class="flex justify-between items-center bg-emerald-950/50 p-2.5 rounded-xl border border-emerald-500/40 text-xs sm:text-sm"><div><p class="text-emerald-400 font-bold">Entrada na Compra</p></div><span class="text-emerald-400 font-bold tabular-nums">${formatBRL(sale.downPayment)} (Pago)</span></div>`;
                 }
                 sale.installments.forEach(inst => {
                     let btnWhatsApp = '';
                     if (sale.custPhone && sale.custPhone.trim() !== '') {
                         const foneLimpo = sale.custPhone.replace(/\D/g, '');
                         const msg = `Olá ${sale.custName || ''}, tudo bem? Aqui é da Solid Tec. Passando para lembrar sobre a sua parcela ${inst.num} referente ao ${sale.name} no valor de ${formatBRL(inst.amount)}. O vencimento é dia ${formatDataBR(inst.dueDate)}.`;
-                        btnWhatsApp = `<a href="https://wa.me/55${foneLimpo}?text=${encodeURIComponent(msg)}" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white p-2 rounded transition" title="Enviar Cobrança no WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>`;
+                        btnWhatsApp = `<a href="https://wa.me/55${foneLimpo}?text=${encodeURIComponent(msg)}" target="_blank" class="bg-emerald-500 hover:bg-emerald-400 text-black p-2 rounded-lg transition" title="Enviar Cobrança no WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>`;
                     }
                     html += `
-                        <div class="flex flex-wrap justify-between items-center bg-slate-900 p-2.5 rounded border border-slate-700 text-xs sm:text-sm gap-2">
+                        <div class="flex flex-wrap justify-between items-center bg-black/70 p-2.5 rounded-xl border border-emerald-500/20 text-xs sm:text-sm gap-2">
                             <div>
-                                <p class="text-white font-bold">${inst.num}ª Parcela - ${formatBRL(inst.amount)}</p>
+                                <p class="text-white font-bold tabular-nums">${inst.num}ª Parcela - ${formatBRL(inst.amount)}</p>
                                 <div class="flex items-center gap-1 mt-0.5" title="Toque para editar a data">
                                     <span class="text-xs text-slate-400">Cobrança:</span>
-                                    <input type="date" onchange="updateInstDate('sale', ${sale.id}, ${inst.id}, this.value)" value="${inst.dueDate}" class="bg-transparent text-xs text-blue-400 font-bold outline-none border-b border-dashed border-slate-500 hover:border-blue-400 cursor-pointer p-0 m-0 [color-scheme:dark]">
+                                    <input type="date" onchange="updateInstDate('sale', ${sale.id}, ${inst.id}, this.value)" value="${inst.dueDate}" class="bg-transparent text-xs text-emerald-400 font-bold outline-none border-b border-dashed border-emerald-500/50 hover:border-emerald-400 cursor-pointer p-0 m-0 [color-scheme:dark]">
                                 </div>
                             </div>
                             <div class="flex items-center gap-2">
                                 ${!inst.isPaid && btnWhatsApp !== '' ? btnWhatsApp : ''}
-                                <button type="button" onclick="toggleInstPaid('sale', ${sale.id}, ${inst.id})" class="px-3 py-2 rounded text-xs font-bold transition ${inst.isPaid ? 'bg-emerald-600 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}">${inst.isPaid ? '✅ Recebido' : 'Pendente'}</button>
+                                <button type="button" onclick="toggleInstPaid('sale', ${sale.id}, ${inst.id})" class="px-3 py-2 rounded-lg text-xs font-bold transition ${inst.isPaid ? 'bg-emerald-500 text-black' : 'bg-emerald-950/70 text-emerald-200 hover:bg-emerald-900'}">${inst.isPaid ? '✅ Recebido' : 'Pendente'}</button>
                             </div>
                         </div>`;
                 });
@@ -1260,32 +1779,32 @@
         window.openServiceManager = function(id) {
             const srv = services.find(s => s.id === id);
             document.getElementById('modalTitle').innerText = 'Serviço: ' + srv.desc;
-            let html = `<div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-xs sm:text-sm mb-4 space-y-1"><p><strong class="text-white">Custo Total:</strong> <span class="text-red-400">${formatBRL(srv.costTravel + srv.costMaterial)}</span></p><p><strong class="text-white">Valor Total Cobrado:</strong> <span class="text-emerald-400">${formatBRL(srv.price)}</span></p><p><strong class="text-white">Cliente:</strong> ${srv.client || 'N/A'}</p></div>`;
+            let html = `<div class="bg-black/70 p-3.5 rounded-xl border border-emerald-500/20 text-xs sm:text-sm mb-4 space-y-1"><p><strong class="text-white">Custo Total:</strong> <span class="text-rose-400 tabular-nums">${formatBRL(srv.costTravel + srv.costMaterial)}</span></p><p><strong class="text-white">Valor Total Cobrado:</strong> <span class="text-emerald-400 tabular-nums">${formatBRL(srv.price)}</span></p><p><strong class="text-white">Cliente:</strong> ${srv.client || 'N/A'}</p></div>`;
 
             if (srv.paymentType === 'parcelado') {
-                html += `<div class="mt-2"><h4 class="text-sm font-bold text-slate-300 mb-3"><i class="fa-solid fa-money-check-dollar text-emerald-400 mr-2"></i>Controle de Parcelas</h4><div class="space-y-2">`;
+                html += `<div class="mt-2"><h4 class="text-sm font-bold text-emerald-200 mb-3"><i class="fa-solid fa-money-check-dollar text-emerald-400 mr-2"></i>Controle de Parcelas</h4><div class="space-y-2">`;
                 if (srv.downPayment > 0) {
-                    html += `<div class="flex justify-between items-center bg-emerald-900/30 p-2.5 rounded border border-emerald-700/50 text-xs sm:text-sm"><div><p class="text-emerald-400 font-bold">Sinal / Entrada</p></div><span class="text-emerald-400 font-bold">${formatBRL(srv.downPayment)} (Pago)</span></div>`;
+                    html += `<div class="flex justify-between items-center bg-emerald-950/50 p-2.5 rounded-xl border border-emerald-500/40 text-xs sm:text-sm"><div><p class="text-emerald-400 font-bold">Sinal / Entrada</p></div><span class="text-emerald-400 font-bold tabular-nums">${formatBRL(srv.downPayment)} (Pago)</span></div>`;
                 }
                 srv.installments.forEach(inst => {
                     let btnWhatsApp = '';
                     if (srv.phone && srv.phone.trim() !== '') {
                         const foneLimpo = srv.phone.replace(/\D/g, '');
                         const msg = `Olá ${srv.client || ''}, tudo bem? Aqui é da Solid Tec. Passando para lembrar sobre a sua parcela ${inst.num} referente ao serviço de ${srv.desc} no valor de ${formatBRL(inst.amount)}. O vencimento é dia ${formatDataBR(inst.dueDate)}.`;
-                        btnWhatsApp = `<a href="https://wa.me/55${foneLimpo}?text=${encodeURIComponent(msg)}" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white p-2 rounded transition" title="Enviar Cobrança no WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>`;
+                        btnWhatsApp = `<a href="https://wa.me/55${foneLimpo}?text=${encodeURIComponent(msg)}" target="_blank" class="bg-emerald-500 hover:bg-emerald-400 text-black p-2 rounded-lg transition" title="Enviar Cobrança no WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>`;
                     }
                     html += `
-                        <div class="flex flex-wrap justify-between items-center bg-slate-900 p-2.5 rounded border border-slate-700 text-xs sm:text-sm gap-2">
+                        <div class="flex flex-wrap justify-between items-center bg-black/70 p-2.5 rounded-xl border border-emerald-500/20 text-xs sm:text-sm gap-2">
                             <div>
-                                <p class="text-white font-bold">${inst.num}ª Parcela - ${formatBRL(inst.amount)}</p>
+                                <p class="text-white font-bold tabular-nums">${inst.num}ª Parcela - ${formatBRL(inst.amount)}</p>
                                 <div class="flex items-center gap-1 mt-0.5" title="Toque para editar a data">
                                     <span class="text-xs text-slate-400">Cobrança:</span>
-                                    <input type="date" onchange="updateInstDate('service', ${srv.id}, ${inst.id}, this.value)" value="${inst.dueDate}" class="bg-transparent text-xs text-blue-400 font-bold outline-none border-b border-dashed border-slate-500 hover:border-blue-400 cursor-pointer p-0 m-0 [color-scheme:dark]">
+                                    <input type="date" onchange="updateInstDate('service', ${srv.id}, ${inst.id}, this.value)" value="${inst.dueDate}" class="bg-transparent text-xs text-emerald-400 font-bold outline-none border-b border-dashed border-emerald-500/50 hover:border-emerald-400 cursor-pointer p-0 m-0 [color-scheme:dark]">
                                 </div>
                             </div>
                             <div class="flex items-center gap-2">
                                 ${!inst.isPaid && btnWhatsApp !== '' ? btnWhatsApp : ''}
-                                <button type="button" onclick="toggleInstPaid('service', ${srv.id}, ${inst.id})" class="px-3 py-2 rounded text-xs font-bold transition ${inst.isPaid ? 'bg-emerald-600 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}">${inst.isPaid ? '✅ Recebido' : 'Pendente'}</button>
+                                <button type="button" onclick="toggleInstPaid('service', ${srv.id}, ${inst.id})" class="px-3 py-2 rounded-lg text-xs font-bold transition ${inst.isPaid ? 'bg-emerald-500 text-black' : 'bg-emerald-950/70 text-emerald-200 hover:bg-emerald-900'}">${inst.isPaid ? '✅ Recebido' : 'Pendente'}</button>
                             </div>
                         </div>`;
                 });
@@ -1297,7 +1816,7 @@
             document.getElementById('appModal').classList.remove('hidden');
         };
 
-        window.toggleModalFields = function(val) { document.getElementById('mSoldFields').className = val === 'vendido' ? 'block space-y-4 pt-4 border-t border-slate-700' : 'hidden'; };
+        window.toggleModalFields = function(val) { document.getElementById('mSoldFields').className = val === 'vendido' ? 'block space-y-4 pt-4 border-t border-emerald-500/15' : 'hidden'; };
         window.toggleProductPaymentFields = function(val) { document.getElementById('mInstWrapper').className = val === 'parcelado' ? 'block space-y-2.5' : 'hidden'; };
 
         window.saveItemChanges = function(e, id) {
@@ -1403,7 +1922,7 @@
             const dayExpenses = expenses.filter(e => e.date === fullDate);
             const dayProlabore = prolabore.filter(p => p.date === fullDate);
 
-            document.getElementById('modalTitle').innerHTML = `<i class="fa-solid fa-calendar-day mr-2 text-blue-400"></i>Movimentação: ${formatDataBR(fullDate)}`;
+            document.getElementById('modalTitle').innerHTML = `<i class="fa-solid fa-calendar-day mr-2 text-emerald-400"></i>Movimentação: ${formatDataBR(fullDate)}`;
 
             let html = '<div class="space-y-3">';
 
@@ -1415,15 +1934,15 @@
                 let cost = (sale.costAcq || 0) + (sale.costVar || 0) + (sale.costTravel || 0);
                 let profit = (sale.salePrice || 0) - cost;
                 html += `
-                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 flex flex-col gap-2 relative overflow-hidden">
-                        <div class="absolute left-0 top-0 bottom-0 w-1 ${profit >= 0 ? 'bg-emerald-500' : 'bg-red-500'}"></div>
+                    <div class="bg-black/70 p-3.5 rounded-xl border border-emerald-500/20 flex flex-col gap-2 relative overflow-hidden">
+                        <div class="absolute left-0 top-0 bottom-0 w-1 ${profit >= 0 ? 'bg-emerald-400' : 'bg-rose-500'}"></div>
                         <div class="flex justify-between items-start pl-2 gap-2">
-                            <span class="bg-blue-500/20 text-blue-400 text-[10px] px-2 py-0.5 rounded font-bold uppercase shrink-0">Produto</span>
+                            <span class="bg-emerald-500/20 text-emerald-300 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase shrink-0">Produto</span>
                             <h4 class="text-white font-bold text-sm text-right">${sale.name}</h4>
                         </div>
-                        <div class="flex flex-wrap justify-between items-end text-xs pl-2 border-t border-slate-800 mt-1 pt-2 gap-1">
+                        <div class="flex flex-wrap justify-between items-end text-xs pl-2 border-t border-emerald-500/15 mt-1 pt-2 gap-1 tabular-nums">
                             <div>Custo: ${formatBRL(cost)} | Venda: ${formatBRL(sale.salePrice)}</div>
-                            <div class="text-right"><span class="${profit >= 0 ? 'text-emerald-400' : 'text-red-400'} font-bold text-sm">Lucro: ${formatBRL(profit)}</span></div>
+                            <div class="text-right"><span class="${profit >= 0 ? 'text-emerald-400' : 'text-rose-400'} font-bold text-sm">Lucro: ${formatBRL(profit)}</span></div>
                         </div>
                     </div>
                 `;
@@ -1433,15 +1952,15 @@
                 let cost = srv.costTravel + srv.costMaterial;
                 let profit = srv.price - cost;
                 html += `
-                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 flex flex-col gap-2 relative overflow-hidden">
-                        <div class="absolute left-0 top-0 bottom-0 w-1 ${profit >= 0 ? 'bg-emerald-500' : 'bg-red-500'}"></div>
+                    <div class="bg-black/70 p-3.5 rounded-xl border border-emerald-500/20 flex flex-col gap-2 relative overflow-hidden">
+                        <div class="absolute left-0 top-0 bottom-0 w-1 ${profit >= 0 ? 'bg-emerald-400' : 'bg-rose-500'}"></div>
                         <div class="flex justify-between items-start pl-2 gap-2">
-                            <span class="bg-purple-500/20 text-purple-400 text-[10px] px-2 py-0.5 rounded font-bold uppercase shrink-0">Serviço</span>
+                            <span class="bg-green-500/20 text-green-300 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase shrink-0">Serviço</span>
                             <h4 class="text-white font-bold text-sm text-right">${srv.desc}</h4>
                         </div>
-                        <div class="flex flex-wrap justify-between items-end text-xs pl-2 border-t border-slate-800 mt-1 pt-2 gap-1">
+                        <div class="flex flex-wrap justify-between items-end text-xs pl-2 border-t border-emerald-500/15 mt-1 pt-2 gap-1 tabular-nums">
                             <div>Custo: ${formatBRL(cost)} | Cobrado: ${formatBRL(srv.price)}</div>
-                            <div class="text-right"><span class="${profit >= 0 ? 'text-emerald-400' : 'text-red-400'} font-bold text-sm">Lucro: ${formatBRL(profit)}</span></div>
+                            <div class="text-right"><span class="${profit >= 0 ? 'text-emerald-400' : 'text-rose-400'} font-bold text-sm">Lucro: ${formatBRL(profit)}</span></div>
                         </div>
                     </div>
                 `;
@@ -1449,15 +1968,15 @@
 
             dayExpenses.forEach(exp => {
                 html += `
-                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 flex flex-col gap-2 relative overflow-hidden">
-                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-red-500"></div>
+                    <div class="bg-black/70 p-3.5 rounded-xl border border-emerald-500/20 flex flex-col gap-2 relative overflow-hidden">
+                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-rose-500"></div>
                         <div class="flex justify-between items-start pl-2 gap-2">
-                            <span class="bg-red-500/20 text-red-400 text-[10px] px-2 py-0.5 rounded font-bold uppercase shrink-0">Despesa</span>
+                            <span class="bg-rose-500/20 text-rose-400 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase shrink-0">Despesa</span>
                             <h4 class="text-white font-bold text-sm text-right">${exp.desc}</h4>
                         </div>
-                        <div class="flex justify-between items-end text-xs pt-2 pl-2 border-t border-slate-800 mt-1">
+                        <div class="flex justify-between items-end text-xs pt-2 pl-2 border-t border-emerald-500/15 mt-1 tabular-nums">
                             <span class="text-slate-400">Valor gasto</span>
-                            <span class="text-red-400 font-bold text-sm">-${formatBRL(exp.val)}</span>
+                            <span class="text-rose-400 font-bold text-sm">-${formatBRL(exp.val)}</span>
                         </div>
                     </div>
                 `;
@@ -1465,15 +1984,15 @@
 
             dayProlabore.forEach(pro => {
                 html += `
-                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 flex flex-col gap-2 relative overflow-hidden">
-                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-blue-400"></div>
+                    <div class="bg-black/70 p-3.5 rounded-xl border border-emerald-500/20 flex flex-col gap-2 relative overflow-hidden">
+                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-amber-400"></div>
                         <div class="flex justify-between items-start pl-2 gap-2">
-                            <span class="bg-blue-500/20 text-blue-300 text-[10px] px-2 py-0.5 rounded font-bold uppercase shrink-0">Pró-Labore</span>
+                            <span class="bg-amber-500/20 text-amber-300 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase shrink-0">Pró-Labore</span>
                             <h4 class="text-white font-bold text-sm text-right">${pro.desc}</h4>
                         </div>
-                        <div class="flex justify-between items-end text-xs pt-2 pl-2 border-t border-slate-800 mt-1">
+                        <div class="flex justify-between items-end text-xs pt-2 pl-2 border-t border-emerald-500/15 mt-1 tabular-nums">
                             <span class="text-slate-400">Retirada</span>
-                            <span class="text-blue-400 font-bold text-sm">-${formatBRL(pro.val)}</span>
+                            <span class="text-amber-400 font-bold text-sm">-${formatBRL(pro.val)}</span>
                         </div>
                     </div>
                 `;
@@ -1504,22 +2023,22 @@
             const soldProducts = sales.filter(s => s.status === 'vendido' && getCategoryName(s.name) === categoryName && (!monthFilter || (s.saleDate && s.saleDate.startsWith(monthFilter)) || (s.installments || []).some(i => i.isPaid && i.dueDate && i.dueDate.startsWith(monthFilter))));
             soldProducts.sort((a, b) => new Date(b.saleDate) - new Date(a.saleDate));
 
-            document.getElementById('modalTitle').innerHTML = `<i class="fa-solid fa-list-ul mr-2 text-blue-400"></i>Vendas: ${categoryName}`;
+            document.getElementById('modalTitle').innerHTML = `<i class="fa-solid fa-list-ul mr-2 text-emerald-400"></i>Vendas: ${categoryName}`;
 
             let html = '<div class="space-y-3">';
             soldProducts.forEach(sale => {
                 let cost = (sale.costAcq || 0) + (sale.costVar || 0) + (sale.costTravel || 0);
                 let profit = (sale.salePrice || 0) - cost;
                 html += `
-                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 flex flex-col gap-2 relative overflow-hidden">
-                        <div class="absolute left-0 top-0 bottom-0 w-1 ${profit >= 0 ? 'bg-emerald-500' : 'bg-red-500'}"></div>
+                    <div class="bg-black/70 p-3.5 rounded-xl border border-emerald-500/20 flex flex-col gap-2 relative overflow-hidden">
+                        <div class="absolute left-0 top-0 bottom-0 w-1 ${profit >= 0 ? 'bg-emerald-400' : 'bg-rose-500'}"></div>
                         <div class="flex justify-between items-start pl-2 gap-2">
                             <h4 class="text-white font-bold text-sm">${sale.name}</h4>
-                            <span class="text-xs text-slate-400 bg-slate-800 px-2 py-1 rounded shrink-0">Venda: ${formatDataBR(sale.saleDate)}</span>
+                            <span class="text-xs text-emerald-200/70 bg-emerald-950/60 px-2 py-1 rounded-lg shrink-0">Venda: ${formatDataBR(sale.saleDate)}</span>
                         </div>
-                        <div class="flex flex-wrap justify-between items-end text-xs pt-1 pl-2 gap-1">
+                        <div class="flex flex-wrap justify-between items-end text-xs pt-1 pl-2 gap-1 tabular-nums">
                             <div>Custo: ${formatBRL(cost)} | Venda: ${formatBRL(sale.salePrice)}</div>
-                            <div class="text-right"><span class="${profit >= 0 ? 'text-emerald-400' : 'text-red-400'} font-bold text-sm">Lucro: ${formatBRL(profit)}</span></div>
+                            <div class="text-right"><span class="${profit >= 0 ? 'text-emerald-400' : 'text-rose-400'} font-bold text-sm">Lucro: ${formatBRL(profit)}</span></div>
                         </div>
                     </div>
                 `;
@@ -1570,24 +2089,24 @@
             tbody.innerHTML = '';
 
             if (rankedArray.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="px-5 py-8 text-center text-slate-500">Nenhum recebimento registrado neste mês para formar o ranking.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" class="px-5 py-8 text-center text-emerald-200/50">Nenhum recebimento registrado neste mês para formar o ranking.</td></tr>';
                 return;
             }
 
             rankedArray.forEach((item, index) => {
                 let posColor = 'text-slate-400', icon = '';
-                if (index === 0) { posColor = 'text-yellow-400 font-bold'; icon = '<i class="fa-solid fa-trophy mr-2"></i>'; }
+                if (index === 0) { posColor = 'text-amber-400 font-bold'; icon = '<i class="fa-solid fa-trophy mr-2"></i>'; }
                 else if (index === 1) { posColor = 'text-slate-300 font-bold'; icon = '<i class="fa-solid fa-medal mr-2"></i>'; }
                 else if (index === 2) { posColor = 'text-amber-600 font-bold'; icon = '<i class="fa-solid fa-medal mr-2"></i>'; }
 
                 tbody.innerHTML += `
-                    <tr onclick="openCategoryDetails('${item.name}')" class="cursor-pointer group hover:bg-blue-900/20 transition border-b border-slate-700/50 last:border-0 relative">
+                    <tr onclick="openCategoryDetails('${item.name}')" class="cursor-pointer group hover:bg-emerald-950/40 transition border-b border-emerald-500/15 last:border-0 relative tabular-nums">
                         <td class="px-3 sm:px-5 py-3.5 ${posColor}">${icon}${index + 1}º</td>
-                        <td class="px-3 sm:px-5 py-3.5 font-semibold text-white group-hover:text-blue-400 transition">${item.name}</td>
-                        <td class="px-3 sm:px-5 py-3.5 text-center"><span class="bg-blue-500/20 text-blue-400 px-2.5 py-1 rounded font-bold">${item.qty} un</span></td>
+                        <td class="px-3 sm:px-5 py-3.5 font-semibold text-white group-hover:text-emerald-400 transition">${item.name}</td>
+                        <td class="px-3 sm:px-5 py-3.5 text-center"><span class="bg-emerald-500/15 text-emerald-300 px-2.5 py-1 rounded-full font-bold text-xs">${item.qty} un</span></td>
                         <td class="px-3 sm:px-5 py-3.5 text-right text-slate-400">${formatBRL(item.revenue)}</td>
                         <td class="px-3 sm:px-5 py-3.5 text-right text-emerald-400 font-bold">
-                            <span class="inline-flex items-center gap-2">${formatBRL(item.profit)}<i class="fa-solid fa-chevron-right text-slate-600 group-hover:text-blue-400 text-xs"></i></span>
+                            <span class="inline-flex items-center gap-2">${formatBRL(item.profit)}<i class="fa-solid fa-chevron-right text-emerald-500/50 group-hover:text-emerald-400 text-xs"></i></span>
                         </td>
                     </tr>
                 `;
@@ -1619,7 +2138,7 @@
             });
 
             if (filtered.length === 0) {
-                grid.innerHTML = '<p class="text-slate-500 text-center py-8 text-sm">Nenhum item em estoque ou vendido neste mês.</p>';
+                grid.innerHTML = '<p class="text-emerald-200/50 text-center py-8 text-sm">Nenhum item em estoque ou vendido neste mês.</p>';
                 return;
             }
 
@@ -1634,7 +2153,7 @@
                     if (sale.paymentType === 'parcelado') {
                         const insts = sale.installments || [];
                         const paidCount = insts.filter(i => i.isPaid).length;
-                        payStatus = `<span class="text-[10px] text-blue-400 block mt-1">Parcelas: ${paidCount}/${insts.length} Pagas</span>`;
+                        payStatus = `<span class="text-[10px] text-emerald-300 block mt-1">Parcelas: ${paidCount}/${insts.length} Pagas</span>`;
                     } else {
                         payStatus = `<span class="text-[10px] text-emerald-400 block mt-1">À Vista (Pago)</span>`;
                     }
@@ -1646,28 +2165,28 @@
                     const custName = sale.custName && sale.custName.trim() !== '' ? sale.custName.trim() : '';
                     const greeting = custName ? `Olá ${custName},` : 'Olá!';
                     const msg = `${greeting} tudo bem? Aqui é da Solid Tec. Estou entrando em contato referente ao produto: ${sale.name}.`;
-                    btnWhatsApp = `<a href="https://wa.me/55${foneLimpo}?text=${encodeURIComponent(msg)}" target="_blank" class="text-emerald-500 hover:text-emerald-400 text-lg transition p-1" title="Falar no WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>`;
+                    btnWhatsApp = `<a href="https://wa.me/55${foneLimpo}?text=${encodeURIComponent(msg)}" target="_blank" class="text-emerald-400 hover:text-emerald-300 text-lg transition p-1" title="Falar no WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>`;
                 }
 
                 grid.innerHTML += `
-                    <div ${isDesktop ? `draggable="true" ondragstart="drag(event, ${sale.id})" ondragover="allowDrop(event)" ondrop="drop(event, ${sale.id})" ondragend="dragEnd(event)"` : ''} class="bg-slate-800/85 rounded-xl p-3 flex gap-2.5 sm:gap-3 border border-slate-700 hover:border-slate-500 transition relative items-center">
-                        <div class="hidden md:flex cursor-grab text-slate-600 hover:text-slate-400 pr-1 items-center justify-center text-lg" title="Arraste para reordenar"><i class="fa-solid fa-grip-vertical"></i></div>
-                        <div onclick="openItemManager(${sale.id})" class="cursor-pointer w-14 h-14 sm:w-16 sm:h-16 bg-slate-900 rounded-lg shrink-0 flex items-center justify-center border border-slate-700 overflow-hidden">
-                            ${sale.photo ? `<img src="${sale.photo}" class="w-full h-full object-cover">` : `<i class="fa-solid fa-mobile-screen text-slate-600 text-lg"></i>`}
+                    <div ${isDesktop ? `draggable="true" ondragstart="drag(event, ${sale.id})" ondragover="allowDrop(event)" ondrop="drop(event, ${sale.id})" ondragend="dragEnd(event)"` : ''} class="bg-black/65 rounded-xl p-3 flex gap-2.5 sm:gap-3 border border-emerald-500/20 hover:border-emerald-400/50 transition relative items-center">
+                        <div class="hidden md:flex cursor-grab text-emerald-500/40 hover:text-emerald-400 pr-1 items-center justify-center text-lg" title="Arraste para reordenar"><i class="fa-solid fa-grip-vertical"></i></div>
+                        <div onclick="openItemManager(${sale.id})" class="cursor-pointer w-14 h-14 sm:w-16 sm:h-16 bg-black rounded-xl shrink-0 flex items-center justify-center border border-emerald-500/20 overflow-hidden">
+                            ${sale.photo ? `<img src="${sale.photo}" class="w-full h-full object-cover">` : `<i class="fa-solid fa-mobile-screen text-emerald-500/50 text-lg"></i>`}
                         </div>
                         <div class="flex-1 min-w-0 py-0.5 flex flex-col justify-between">
                             <div class="flex justify-between items-start gap-2">
-                                <h3 onclick="openItemManager(${sale.id})" class="font-bold text-xs sm:text-sm text-white cursor-pointer hover:text-blue-400 truncate">${sale.name}</h3>
+                                <h3 onclick="openItemManager(${sale.id})" class="font-bold text-xs sm:text-sm text-white cursor-pointer hover:text-emerald-400 truncate">${sale.name}</h3>
                                 <div class="flex items-center gap-2 sm:gap-3 shrink-0">
                                     ${btnWhatsApp}
-                                    <button type="button" onclick="deleteSale(${sale.id})" class="text-slate-500 hover:text-red-500 text-sm transition p-1"><i class="fa-solid fa-trash-can"></i></button>
+                                    <button type="button" onclick="deleteSale(${sale.id})" class="text-slate-500 hover:text-rose-500 text-sm transition p-1"><i class="fa-solid fa-trash-can"></i></button>
                                 </div>
                             </div>
                             <div class="mt-1">
-                                <span onclick="openItemManager(${sale.id})" class="px-2 py-0.5 rounded text-[10px] font-bold cursor-pointer transition ${isSold ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}">${isSold ? '✅ Vendido' : '📦 Estoque'}</span>
+                                <span onclick="openItemManager(${sale.id})" class="px-2 py-0.5 rounded-full text-[10px] font-bold cursor-pointer transition ${isSold ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/15 text-amber-400'}">${isSold ? '✅ Vendido' : '📦 Estoque'}</span>
                                 ${payStatus}
                             </div>
-                            <div class="flex flex-wrap justify-between items-end mt-2 text-[11px] text-slate-400 gap-1">
+                            <div class="flex flex-wrap justify-between items-end mt-2 text-[11px] text-emerald-200/65 gap-1 tabular-nums">
                                 <div>Custo: ${formatBRL(cost)}</div>
                                 ${isSold ? `<div>Total: <span class="text-white font-bold">${formatBRL(sale.salePrice)}</span></div>` : ''}
                             </div>
@@ -1681,34 +2200,34 @@
             const grid = document.getElementById('servicesGrid');
             grid.innerHTML = '';
             if (services.length === 0) {
-                grid.innerHTML = '<p class="text-slate-500 text-center py-8 text-sm">Nenhum serviço cadastrado ainda.</p>';
+                grid.innerHTML = '<p class="text-emerald-200/50 text-center py-8 text-sm">Nenhum serviço cadastrado ainda.</p>';
                 return;
             }
             services.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(srv => {
                 const insts = srv.installments || [];
-                let payStatus = srv.paymentType === 'parcelado' ? `<span class="text-[10px] text-blue-400 ml-1.5">Parcelado (${insts.filter(i => i.isPaid).length}/${insts.length} Pagas)</span>` : `<span class="text-[10px] text-emerald-400 ml-1.5">À Vista</span>`;
+                let payStatus = srv.paymentType === 'parcelado' ? `<span class="text-[10px] text-emerald-300 ml-1.5">Parcelado (${insts.filter(i => i.isPaid).length}/${insts.length} Pagas)</span>` : `<span class="text-[10px] text-emerald-400 ml-1.5">À Vista</span>`;
                 let btnWhatsApp = '';
                 if (srv.phone && srv.phone.trim() !== '') {
                     const foneLimpo = srv.phone.replace(/\D/g, '');
                     const clientName = srv.client && srv.client.trim() !== '' ? srv.client.trim() : '';
                     const greeting = clientName ? `Olá ${clientName},` : 'Olá!';
                     const msg = `${greeting} tudo bem? Aqui é da Solid Tec. Estou entrando em contato referente ao serviço: ${srv.desc}.`;
-                    btnWhatsApp = `<a href="https://wa.me/55${foneLimpo}?text=${encodeURIComponent(msg)}" target="_blank" class="text-emerald-500 hover:text-emerald-400 transition p-1" title="Falar no WhatsApp"><i class="fa-brands fa-whatsapp text-lg"></i></a>`;
+                    btnWhatsApp = `<a href="https://wa.me/55${foneLimpo}?text=${encodeURIComponent(msg)}" target="_blank" class="text-emerald-400 hover:text-emerald-300 transition p-1" title="Falar no WhatsApp"><i class="fa-brands fa-whatsapp text-lg"></i></a>`;
                 }
 
                 grid.innerHTML += `
-                    <div class="bg-slate-800/85 rounded-xl p-3 flex flex-col border border-slate-700 hover:border-slate-500 transition">
+                    <div class="bg-black/65 rounded-xl p-3.5 flex flex-col border border-emerald-500/20 hover:border-emerald-400/50 transition">
                         <div class="flex justify-between items-start mb-2 gap-2">
-                            <h3 class="font-bold text-xs sm:text-sm text-white break-words min-w-0">${srv.desc} <span class="text-xs text-slate-500 font-normal">(${formatDataBR(srv.date)})</span></h3>
+                            <h3 class="font-bold text-xs sm:text-sm text-white break-words min-w-0">${srv.desc} <span class="text-xs text-emerald-200/50 font-normal">(${formatDataBR(srv.date)})</span></h3>
                             <div class="flex items-center gap-2 sm:gap-3 text-sm shrink-0">
                                 ${btnWhatsApp}
-                                <button type="button" onclick="openServiceManager(${srv.id})" class="text-blue-400 hover:text-white p-1" title="Ver Parcelas"><i class="fa-solid fa-file-invoice-dollar"></i></button>
-                                <button type="button" onclick="deleteService(${srv.id})" class="text-slate-500 hover:text-red-500 p-1"><i class="fa-solid fa-trash-can"></i></button>
+                                <button type="button" onclick="openServiceManager(${srv.id})" class="text-emerald-400 hover:text-white p-1" title="Ver Parcelas"><i class="fa-solid fa-file-invoice-dollar"></i></button>
+                                <button type="button" onclick="deleteService(${srv.id})" class="text-slate-500 hover:text-rose-500 p-1"><i class="fa-solid fa-trash-can"></i></button>
                             </div>
                         </div>
-                        <p class="text-xs text-slate-400 mb-2">Cliente: <span class="text-slate-300">${srv.client || 'N/A'}</span></p>
-                        <div class="flex flex-wrap justify-between items-center text-xs gap-1">
-                            <span class="text-slate-400">Custo: ${formatBRL(srv.costTravel + srv.costMaterial)}</span>
+                        <p class="text-xs text-emerald-200/60 mb-2">Cliente: <span class="text-white">${srv.client || 'N/A'}</span></p>
+                        <div class="flex flex-wrap justify-between items-center text-xs gap-1 tabular-nums">
+                            <span class="text-emerald-200/60">Custo: ${formatBRL(srv.costTravel + srv.costMaterial)}</span>
                             <span class="text-white font-bold">Total: <span class="text-emerald-400">${formatBRL(srv.price)}</span> ${payStatus}</span>
                         </div>
                     </div>
@@ -1720,11 +2239,11 @@
             const grid = document.getElementById('expenseGrid');
             grid.innerHTML = '';
             if (expenses.length === 0) {
-                grid.innerHTML = '<p class="text-slate-500 text-center py-8 text-sm">Nenhuma despesa registrada.</p>';
+                grid.innerHTML = '<p class="text-emerald-200/50 text-center py-8 text-sm">Nenhuma despesa registrada.</p>';
                 return;
             }
             expenses.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(exp => {
-                grid.innerHTML += `<div class="bg-slate-800/85 rounded-xl p-3 flex justify-between items-center border border-slate-700 gap-2"><div class="min-w-0"><p class="font-bold text-xs sm:text-sm text-white truncate">${exp.desc}</p><p class="text-xs text-slate-400">${formatDataBR(exp.date)}</p></div><div class="flex items-center gap-3 shrink-0"><span class="text-red-400 font-bold text-xs sm:text-sm">${formatBRL(exp.val)}</span><button type="button" onclick="deleteExpense(${exp.id})" class="text-slate-500 hover:text-red-500 p-1"><i class="fa-solid fa-trash-can"></i></button></div></div>`;
+                grid.innerHTML += `<div class="bg-black/65 rounded-xl p-3 flex justify-between items-center border border-emerald-500/20 gap-2"><div class="min-w-0"><p class="font-bold text-xs sm:text-sm text-white truncate">${exp.desc}</p><p class="text-xs text-emerald-200/60">${formatDataBR(exp.date)}</p></div><div class="flex items-center gap-3 shrink-0 tabular-nums"><span class="text-rose-400 font-bold text-xs sm:text-sm">${formatBRL(exp.val)}</span><button type="button" onclick="deleteExpense(${exp.id})" class="text-slate-500 hover:text-rose-500 p-1"><i class="fa-solid fa-trash-can"></i></button></div></div>`;
             });
         }
 
@@ -1732,11 +2251,11 @@
             const grid = document.getElementById('prolaboreGrid');
             grid.innerHTML = '';
             if (prolabore.length === 0) {
-                grid.innerHTML = '<p class="text-slate-500 text-center py-8 text-sm">Nenhuma retirada de pró-labore registrada.</p>';
+                grid.innerHTML = '<p class="text-emerald-200/50 text-center py-8 text-sm">Nenhuma retirada de pró-labore registrada.</p>';
                 return;
             }
             prolabore.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(pro => {
-                grid.innerHTML += `<div class="bg-slate-800/85 rounded-xl p-3 flex justify-between items-center border border-slate-700 gap-2"><div class="min-w-0"><p class="font-bold text-xs sm:text-sm text-white truncate">${pro.desc}</p><p class="text-xs text-slate-400">${formatDataBR(pro.date)}</p></div><div class="flex items-center gap-3 shrink-0"><span class="text-blue-400 font-bold text-xs sm:text-sm">${formatBRL(pro.val)}</span><button type="button" onclick="deleteProlabore(${pro.id})" class="text-slate-500 hover:text-red-500 p-1"><i class="fa-solid fa-trash-can"></i></button></div></div>`;
+                grid.innerHTML += `<div class="bg-black/65 rounded-xl p-3 flex justify-between items-center border border-emerald-500/20 gap-2"><div class="min-w-0"><p class="font-bold text-xs sm:text-sm text-white truncate">${pro.desc}</p><p class="text-xs text-emerald-200/60">${formatDataBR(pro.date)}</p></div><div class="flex items-center gap-3 shrink-0 tabular-nums"><span class="text-emerald-400 font-bold text-xs sm:text-sm">${formatBRL(pro.val)}</span><button type="button" onclick="deleteProlabore(${pro.id})" class="text-slate-500 hover:text-rose-500 p-1"><i class="fa-solid fa-trash-can"></i></button></div></div>`;
             });
         }
 
@@ -1916,17 +2435,12 @@
 
             const profEl = document.getElementById('dashProfit');
             profEl.innerText = formatBRL(netProfit);
-            profEl.className = `text-base sm:text-2xl xl:text-3xl font-bold break-words ${netProfit >= 0 ? 'text-blue-400' : 'text-red-400'}`;
+            profEl.className = `text-base sm:text-2xl font-extrabold tabular-nums break-words ${netProfit >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
 
-            let chartLabels = [];
-            let chartDataRev = [];
-            let chartDataProfit = [];
-
-            Object.keys(dailyMetrics).sort((a, b) => parseInt(a) - parseInt(b)).forEach(day => {
-                chartLabels.push(`Dia ${day}`);
-                chartDataRev.push(dailyMetrics[day].rev);
-                chartDataProfit.push(dailyMetrics[day].profit);
-            });
+            let sortedDays = Object.keys(dailyMetrics).sort((a, b) => parseInt(a) - parseInt(b));
+            let chartLabels = sortedDays.map(day => day.padStart(2, '0'));
+            let chartDataRev = sortedDays.map(day => dailyMetrics[day].rev);
+            let chartDataProfit = sortedDays.map(day => dailyMetrics[day].profit);
 
             const ctx = document.getElementById('profitChart').getContext('2d');
             if (chartInstance) chartInstance.destroy();
@@ -1935,26 +2449,58 @@
                 data: {
                     labels: chartLabels,
                     datasets: [
-                        { label: 'Faturamento', data: chartDataRev, backgroundColor: '#3b82f6', borderRadius: 4 },
-                        { label: 'Lucro Líquido', data: chartDataProfit, backgroundColor: '#10b981', borderRadius: 4 }
+                        { label: 'Faturamento', data: chartDataRev, backgroundColor: '#10b981', borderRadius: 6, barPercentage: 0.72, categoryPercentage: 0.72 },
+                        { label: 'Lucro Líquido', data: chartDataProfit, backgroundColor: '#a7f3d0', borderRadius: 6, barPercentage: 0.72, categoryPercentage: 0.72 }
                     ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    layout: { padding: { bottom: 4 } },
                     plugins: {
-                        legend: { labels: { color: '#cbd5e1', font: { family: "'Segoe UI', sans-serif", size: 12 } } },
-                        tooltip: { callbacks: { label: (c) => c.dataset.label + ': ' + formatBRL(c.parsed.y) } }
+                        legend: {
+                            labels: {
+                                color: '#d1fae5',
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                boxWidth: 8,
+                                font: { family: "'Plus Jakarta Sans', sans-serif", size: 12, weight: '600' }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: '#07110c',
+                            borderColor: 'rgba(16, 185, 129, 0.4)',
+                            borderWidth: 1,
+                            titleFont: { family: "'Plus Jakarta Sans', sans-serif", weight: '700' },
+                            bodyFont: { family: "'Plus Jakarta Sans', sans-serif" },
+                            callbacks: {
+                                title: (items) => `Dia ${items[0].label}`,
+                                label: (c) => `${c.dataset.label}: ${formatBRL(c.parsed.y)}`
+                            }
+                        }
                     },
                     scales: {
-                        y: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
-                        x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                        y: {
+                            border: { display: false },
+                            grid: { color: 'rgba(16, 185, 129, 0.12)' },
+                            ticks: { color: '#6ee7b7', font: { family: "'Plus Jakarta Sans', sans-serif", size: 11 } }
+                        },
+                        x: {
+                            border: { display: false },
+                            grid: { display: false },
+                            ticks: {
+                                color: '#d1fae5',
+                                maxRotation: 0,
+                                minRotation: 0,
+                                autoSkip: true,
+                                font: { family: "'Plus Jakarta Sans', sans-serif", size: 11, weight: '600' }
+                            }
+                        }
                     },
                     onClick: (e, elements) => {
                         if (elements.length > 0) {
                             const dataIndex = elements[0].index;
-                            const label = chartInstance.data.labels[dataIndex];
-                            const day = label.replace('Dia ', '').padStart(2, '0');
+                            const day = String(chartInstance.data.labels[dataIndex]).padStart(2, '0');
                             const filter = document.getElementById('globalMonthFilter').value;
                             if (filter) openDayDetails(`${filter}-${day}`);
                         }
@@ -1964,13 +2510,12 @@
             });
         }
 
-        // Sincroniza sempre que voltar para a aba/app no celular ou PC
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') pullFromCloud(false);
         });
 
         updateBillingNotification();
-        switchTab('dashboard');
+        switchTab('faturamento');
         pullFromCloud(false);
     </script>
 </body>
